@@ -26,6 +26,15 @@ puts "populating job postings"
     )
   end
 
+puts "populating companies"
+  get_api_data.each do |job|
+    Company.create(
+      name: job["company"],
+      description: job["description"],
+      company_url: job["company_url"]
+    )
+  end
+
 puts "populating branches"
   get_api_data.each do |job|
     Branch.create(
