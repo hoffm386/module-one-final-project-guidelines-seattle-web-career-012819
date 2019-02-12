@@ -7,5 +7,6 @@ class CreateJobPostings < ActiveRecord::Migration[5.0]
       t.string :employment_type
       t.string :application_link
       t.integer :branch_id
+    end 
   end
 end

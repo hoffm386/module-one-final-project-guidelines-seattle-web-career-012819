@@ -3,6 +3,7 @@ class CreateBranches < ActiveRecord::Migration[5.0]
     create_table :branches do |t|
       t.string :name
       t.string :location
-      t.integer :company_id 
+      t.integer :company_id
+    end  
   end
 end
