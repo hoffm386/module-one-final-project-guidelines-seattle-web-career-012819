@@ -1,5 +1,5 @@
 class CreatePokemon < ActiveRecord::Migration 
-    def change 
+    def change
         create_table :pokemons do |t|
             t.string :name
             t.string :height
