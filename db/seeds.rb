@@ -12,23 +12,14 @@ def iterate_api_data
   end
 end
 
+
 JobPosting.destroy_all
 Company.destroy_all
 Branch.destroy_all
 
-puts "populating job postings"
-  get_api_data.each do |job|
-    JobPosting.create(
-      title: job["title"],
-      description: job["description"],
-      employment_type: job["type"],
-      application_link: job["how_to_apply"]
-    )
-  end
-
 puts "populating companies"
   get_api_data.each do |job|
-    Company.create(
+    Company.find_or_create_by(
       name: job["company"],
       description: job["description"],
       company_url: job["company_url"]
@@ -37,8 +28,20 @@ puts "populating companies"
 
 puts "populating branches"
   get_api_data.each do |job|
-    Branch.create(
-      company: job["company"],
+    Branch.find_or_create_by(
+      name: job["company"],
+      company: Company.where(name: job["company"]).first,
       location: job["location"]
     )
   end
+
+  puts "populating job postings"
+    get_api_data.each do |job|
+      JobPosting.find_or_create_by(
+        title: job["title"],
+        description: job["description"],
+        employment_type: job["type"],
+        application_link: job["how_to_apply"],
+        branch: Branch.where(name: job["company"]).first
+      )
+    end
