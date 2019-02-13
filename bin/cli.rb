@@ -239,7 +239,17 @@ class CLI
   end
 
   def saved_jobs
-    SavedJobs.where()
+    puts "Please enter your User ID: "
+    user_id_response = gets.chomp.to_i
+    current_job_hunter = JobHunter.where(:id => user_id_response)
+    if current_job_hunter
+      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
+      puts
+    else
+      puts "You have no saved job postings.".colorize(:red)
+      main_menu
+    end
   end
 
 
