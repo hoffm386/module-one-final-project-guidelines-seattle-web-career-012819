@@ -4,8 +4,8 @@ class CreatePokemon < ActiveRecord::Migration
             t.string :name
             t.string :height
             t.integer :weight
-            t.string :type_1
-            t.string :type_2
+            t.string :type_array, array: true, default: []
+            t.string :url
         end
     end
 end
