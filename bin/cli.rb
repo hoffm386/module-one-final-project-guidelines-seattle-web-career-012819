@@ -2,7 +2,7 @@ class CLI
 
 def welcome
    puts "Welcome to Dev Job Hunter! Have you already signed up (y/n)?"
-   sign_up_response = gets.chomp
+   sign_up_response = gets.chomp.downcase
    if sign_up_response == 'y'
      main_menu
    elsif sign_up_response == 'n'
@@ -17,13 +17,13 @@ def sign_up
   puts "Welcome to Dev Job Hunter!"
   puts
   puts "Please enter your name"
-  hunter_name = gets.chomp
+  hunter_name = gets.chomp.downcase
   puts "Welcome, #{hunter_name}!"
   puts
   puts "Please enter the tecnhologies you are fluent in i.e. 'ruby,java,javascript' "
-  hunter_tecnhologies = gets.chomp
+  hunter_tecnhologies = gets.chomp.downcase
   puts "Please enter your current location"
-  hunter_location = gets.chomp
+  hunter_location = gets.chomp.downcase
 
   #put this here for now to delete previous users
   JobHunter.destroy_all
@@ -46,7 +46,7 @@ def main_menu
   puts "2. See Saved Jobs"
   puts
   puts "3. Apply for job"
-  main_menu_response = gets.chomp
+  main_menu_response = gets.chomp.downcase
 
   if main_menu_response[0] == "1"
     search_jobs
@@ -66,7 +66,7 @@ def search_jobs
    puts "2. Search by title"
    puts
    puts "3. Search by tecnhologies"
-   search_jobs_response = gets.chomp
+   search_jobs_response = gets.chomp.downcase
 
    if search_jobs_response[0] == "1"
      search_by_location
@@ -79,12 +79,12 @@ end
 
 def search_by_location
   puts "Please enter the location where you want to work"
-  user_location_response = gets.chomp
-   jobs_by_location = JobPosting.joins(:branch).where('branches.location = ?', user_location_response)
+  user_location_response = gets.chomp.downcase
+   jobs_by_location = JobPosting.joins(:branch).where('LOWER(branches.location) = ?', user_location_response)
     if jobs_by_location.count > 0
       puts "Here are the jobs in your area"
       puts
-      puts jobs_by_location
+      puts jobs_by_location.map {|job| job[:title]}
     else
       puts "Sorry, there are no jobs in your area"
       search_by_location
