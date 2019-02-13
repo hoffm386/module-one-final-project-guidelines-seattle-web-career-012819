@@ -2,7 +2,7 @@ require 'rest-client'
 require 'json'
 require 'pry'
 
-def data
+def api__hash_data
   response_string = RestClient.get('https://data.seattle.gov/resource/tmmm-ytt6.json')
   response_hash = JSON.parse(response_string)
 
