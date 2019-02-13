@@ -9,7 +9,9 @@ search_terms = [
   "allen",
   "hal",
   "beans",
-  "bibs"
+  "bibs", 
+  "cat",
+  "dog"
 ]
 
 # Generate seeds based on each search term.
