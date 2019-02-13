@@ -100,10 +100,8 @@ def search_by_location
       user_saved_response = gets.chomp.to_i
       if user_saved_response >= 0 && user_saved_response < jobs_by_location.count
         job = jobs_by_location[user_saved_response - 1]
-        hunter = JobHunter.where(id: job["id"]).first
+        hunter = JobHunter.last['id']
         posting = JobPosting.where(id: job["id"]).first
-        puts hunter
-        puts posting
         SavedPosting.find_or_create_by(
           job_hunter: hunter,
           job_posting: posting
