@@ -95,10 +95,19 @@ def search_by_location
       puts "Here are the jobs in your area:".colorize(:green)
       puts
       puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      puts
+      puts "Please enter the number for the job you would like to save: "
+      user_saved_response = gets.chomp
+      binding.pry
+      if user_saved_response == jobs_by_location[user_saved_response.to_i - 1]
+        save_to_favorites
+        puts "This job has been saved to your favorites."
+      end
     else
       puts "Sorry, there are no jobs in your area".colorize(:red)
       search_by_location
     end
+    main_menu
 end
 
 def search_by_title
