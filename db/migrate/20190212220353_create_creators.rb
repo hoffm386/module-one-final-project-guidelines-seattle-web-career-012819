@@ -4,4 +4,5 @@ class CreateCreators < ActiveRecord::Migration[5.0]
       t.string :name
     end
   end
+
 end
