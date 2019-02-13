@@ -1,4 +1,3 @@
-require 'colorize'
 class CLI
 
 def welcome
@@ -118,7 +117,23 @@ def search_by_title
 end
 
 def search_by_technologies
-  puts "searching by tecnhologies"
+  puts "Please enter the technology you would like to find: "
+  user_technology_response = gets.chomp
+
+  jobs_by_technology = JobPosting.all.select do |job|
+    (job.description =~ /(?i)#{user_technology_response}/)
+  end
+
+  if jobs_by_technology.count > 0
+    puts "Awesome search, broh! Here are the jobs that match your search: "
+    puts
+    puts jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+  else
+    puts "Dang, broh... Your search didn't turn up any results."
+    puts
+    search_jobs
+  end
+  main_menu
 end
 
 def saved_jobs
