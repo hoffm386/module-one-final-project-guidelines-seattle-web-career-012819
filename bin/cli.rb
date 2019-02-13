@@ -98,14 +98,18 @@ def search_by_location
       puts
       puts "Please enter the number for the job you would like to save: "
       user_saved_response = gets.chomp.to_i
-      if user_saved_response >= 0 && user_saved_response < jobs_by_location.count
+      if user_saved_response >= 0 && user_saved_response <= jobs_by_location.count
         job = jobs_by_location[user_saved_response - 1]
         hunter = JobHunter.last['id']
-        posting = JobPosting.where(id: job["id"]).first
+        posting = JobPosting.find(job["id"])['id']
+        
+        # SavedPosting.destroy_all
+
         SavedPosting.find_or_create_by(
-          job_hunter: hunter,
-          job_posting: posting
+          job_hunter_id: hunter,
+          job_posting_id: posting
         )
+        # binding.pry
         puts "This job has been saved to your favorites."
       else
         puts "Please enter a valid response"
@@ -122,11 +126,28 @@ def search_by_title
   puts
   puts "Please enter the job title you would like to search".colorize(:green)
   user_job_title_response = gets.chomp.downcase
-   jobs_by_title = JobPosting.where("job_postings.title LIKE ?", "%#{user_job_title_response}%")
+  jobs_by_title = JobPosting.where("job_postings.title LIKE ?", "%#{user_job_title_response}%")
   if jobs_by_title.count > 0
     puts "Here are the current openings with similar titles:".colorize(:green)
     puts
     puts jobs_by_title.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+    puts
+    puts "Please enter the number for the job you would like to save: "
+      user_saved_response = gets.chomp.to_i
+      binding.pry
+      if user_saved_response >= 0 && user_saved_response <= jobs_by_title.count
+        job = jobs_by_title[user_saved_response - 1]
+        hunter = JobHunter.last['id']
+        posting = JobPosting.where(id: job["id"])
+        SavedPosting.find_or_create_by(
+          job_hunter: hunter,
+          job_posting: posting
+        )
+        puts "This job has been saved to your favorites."
+      else
+        puts "Please enter a valid response"
+        search_by_title
+      end
   else
     puts "Sorry, there are no jobs that match this title".colorize(:red)
     search_by_title
