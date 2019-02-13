@@ -25,16 +25,15 @@ class CLI
       puts "Please enter your current location"
       hunter_location = gets.chomp.downcase
 
-      #put this here for now to delete previous users
-      JobHunter.destroy_all
-
-      JobHunter.find_or_create_by(
+      current_job_hunter = JobHunter.find_or_create_by(
         name: hunter_name,
         skills: hunter_tecnhologies,
         location: hunter_location
         )
 
-      puts "Thanks for signing up, #{hunter_name}, you can now search developer jobs!".colorize(:green)
+      puts "Thanks for signing up, #{hunter_name}. Your User ID is: #{current_job_hunter['id']}.".colorize(:light_blue)
+      puts "Please use your User ID to access your saved jobs.".colorize(:green)
+      puts "Happy Searching!".colorize(:green)
       main_menu
   end
 
@@ -96,28 +95,32 @@ class CLI
       puts
       puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
-      puts "Please enter the number for the job you would like to save: ".colorize(:green)
-      user_saved_response = gets.chomp.to_i
+      puts "Would you like to save any of these jobs? (y/n)"
+      user_save_input = gets.chomp.downcase
+      if user_save_input == 'y'
+        puts "Please enter the number for the job you would like to save: ".colorize(:green)
+        user_saved_response = gets.chomp.to_i
+        #check to see if user response is valid
+        if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
+          #return the hash of the job that the job hunter wants to save
+          job = jobs_by_location[user_saved_response - 1]
+          #get the id of the most recently added jub hunter in the database
+          hunter = JobHunter.last['id']
+          #get the id of the job posting that matches the job they want to save
+          posting = JobPosting.find(job["id"])['id']
 
-      #check to see if user response is valid
-      if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
-        #return the hash of the job that the job hunter wants to save
-        job = jobs_by_location[user_saved_response - 1]
-        #get the id of the most recently added jub hunter in the database
-        hunter = JobHunter.last['id']
-        #get the id of the job posting that matches the job they want to save
-        posting = JobPosting.find(job["id"])['id']
-
-        #save that job and user to the saved postings table in the database
-        SavedPosting.find_or_create_by(
-          job_hunter_id: hunter,
-          job_posting_id: posting
-        )
-        puts "This job has been saved to your favorites.".colorize(:light_blue)
+          #save that job and user to the saved postings table in the database
+          SavedPosting.find_or_create_by(
+            job_hunter_id: hunter,
+            job_posting_id: posting
+          )
+          puts "This job has been saved to your favorites.".colorize(:light_blue)
+          main_menu
+        else
+          puts "Please enter a valid response".colorize(:red)
+          search_by_location
+        end
         main_menu
-      else
-        puts "Please enter a valid response".colorize(:red)
-        search_by_location
       end
     else
       puts "Sorry, there are no jobs in your area".colorize(:red)
@@ -170,7 +173,7 @@ def search_by_technologies
 
   #************************how can we search multiple in one search?**************************
 
-  jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%") 
+  jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%")
 
   if jobs_by_technology.count > 0
     puts "Awesome search, broh! Here are the jobs that match your search: "
@@ -207,8 +210,7 @@ def search_by_technologies
 end
 
 def saved_jobs
-
-puts "here are your saved jobs"
+  SavedJobs.where()
 end
 
 
