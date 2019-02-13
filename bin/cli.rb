@@ -98,26 +98,32 @@ class CLI
       puts "Would you like to save any of these jobs? (y/n)"
       user_save_input = gets.chomp.downcase
       if user_save_input == 'y'
-        puts "Please enter the number for the job you would like to save: ".colorize(:green)
-        user_saved_response = gets.chomp.to_i
-        #check to see if user response is valid
-        if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
-          #return the hash of the job that the job hunter wants to save
-          job = jobs_by_location[user_saved_response - 1]
-          #get the id of the most recently added jub hunter in the database
-          hunter = JobHunter.last['id']
-          #get the id of the job posting that matches the job they want to save
-          posting = JobPosting.find(job["id"])['id']
+        puts "Please enter your User ID: "
+        user_id_response = gets.chomp.to_i
+        if JobHunter.where(:id => user_id_response).exists?
+          puts "Please enter the number for the job you would like to save: ".colorize(:green)
+          user_saved_response = gets.chomp.to_i
+          #check to see if user response is valid
+          if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
+            #return the hash of the job that the job hunter wants to save
+            job = jobs_by_location[user_saved_response - 1]
+            #get the id of the most recently added jub hunter in the database
+            hunter = user_id_response
+            #get the id of the job posting that matches the job they want to save
+            posting = JobPosting.find(job["id"])['id']
 
-          #save that job and user to the saved postings table in the database
-          SavedPosting.find_or_create_by(
-            job_hunter_id: hunter,
-            job_posting_id: posting
-          )
-          puts "This job has been saved to your favorites.".colorize(:light_blue)
-          main_menu
-        else
-          puts "Please enter a valid response".colorize(:red)
+            #save that job and user to the saved postings table in the database
+            SavedPosting.find_or_create_by(
+              job_hunter_id: hunter,
+              job_posting_id: posting
+            )
+            puts "This job has been saved to your favorites.".colorize(:light_blue)
+            main_menu
+          else
+            puts "Please enter a valid response".colorize(:red)
+            search_by_location
+          end
+          puts "User ID is incorrect. Please search again.".colrize(:red)
           search_by_location
         end
         main_menu
