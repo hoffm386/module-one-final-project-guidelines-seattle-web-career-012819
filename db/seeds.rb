@@ -12,10 +12,17 @@ def iterate_api_data
   end
 end
 
-
+# JobHunter.destroy_all
 JobPosting.destroy_all
 Company.destroy_all
 Branch.destroy_all
+
+# puts "creating User"
+  # JobHunter.find_or_create_by(
+  #   name: "Eli",
+  #   skills: "Kinda ok at Ruby",
+  #   location: "Seattle"
+  #   )
 
 puts "populating companies"
   get_api_data.each do |job|
