@@ -37,6 +37,8 @@ class CLI
       main_menu
   end
 
+  #** create sign in method (asks for your user id, makes sure that id exists in the jobhunters table, and returns that number)
+
   def main_menu
       puts
       puts "What would you like to do?".colorize(:green)
@@ -183,60 +185,71 @@ class CLI
     end
   end
 
-def search_by_technologies
-  puts "Please enter the technology you would like to find: "
-  user_technology_response = gets.chomp
+  def search_by_technologies
+    puts "Please enter the technology you would like to find: "
+    user_technology_response = gets.chomp
 
-  #************************how can we search multiple in one search?**************************
+    #************************how can we search multiple in one search?**************************
 
-  jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%")
+    jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%")
 
-  if jobs_by_technology.count > 0
-    puts "Awesome search, broh! Here are the jobs that match your search: "
-    puts
-    puts jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
-    puts
-    puts "Please enter the number for the job you would like to save: ".colorize(:green)
-    user_saved_response = gets.chomp.to_i
+    if jobs_by_technology.count > 0
+      puts "Here are the jobs that match your search: "
+      puts
+      puts jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      puts
+      puts "Would you like to save any of these jobs? (y/n)"
+      user_saved_response = gets.chomp.downcase
+      if user_saved_response == 'y'
+        puts "Please enter your User ID: "
+        user_id_response = gets.chomp.to_i
+        if JobHunter.where(:id => user_id_response)
 
-    #check to see if user response is valid
-    if user_saved_response > 0 && user_saved_response <= jobs_by_technology.count
-      #return the hash of the job that the job hunter wants to save
-      job = jobs_by_technology[user_saved_response - 1]
-      #get the id of the most recently added jub hunter in the database
-      hunter = JobHunter.last['id']
-      #get the id of the job posting that matches the job they want to save
-      posting = JobPosting.find(job["id"])['id']
+          puts "Please enter the number for the job you would like to save: ".colorize(:green)
+          user_saved_response = gets.chomp.to_i
 
-      #save that job and user to the saved postings table in the database
-      SavedPosting.find_or_create_by(
-        job_hunter_id: hunter,
-        job_posting_id: posting
-      )
-      puts "This job has been saved to your favorites.".colorize(:light_blue)
-      main_menu
+          #check to see if user response is valid
+          if user_saved_response > 0 && user_saved_response <= jobs_by_technology.count
+            #return the hash of the job that the job hunter wants to save
+            job = jobs_by_technology[user_saved_response - 1]
+            #get the id of the most recently added jub hunter in the database
+            hunter = JobHunter.last['id']
+            #get the id of the job posting that matches the job they want to save
+            posting = JobPosting.find(job["id"])['id']
+
+            #save that job and user to the saved postings table in the database
+            SavedPosting.find_or_create_by(
+              job_hunter_id: hunter,
+              job_posting_id: posting
+            )
+            puts "This job has been saved to your favorites.".colorize(:light_blue)
+            main_menu
+          end
+          puts "User ID is incorrect. Please search again.".colorize(:red)
+          search_by_technologies
+        end
+      else
+        puts "Please enter a valid response: ".colorize(:red)
+        search_by_technologies
+      end
     else
-      puts "Please enter a valid response".colorize(:red)
+      puts "Sorry, there are no jobs in your area".colorize(:red)
       search_by_technologies
     end
-  else
-    puts "Sorry, there are no jobs in your area".colorize(:red)
-    search_by_technologies
   end
-end
 
-def saved_jobs
-  SavedJobs.where()
-end
+  def saved_jobs
+    SavedJobs.where()
+  end
 
 
-def apply_job
+  def apply_job
+    puts "what would you like to apply for"
+  end
 
-puts "what would you like to apply for"
-end
+  def save_job_to_favorites
 
-def save_job_to_favorites
-end
+  end
 
 
 
