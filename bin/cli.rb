@@ -96,23 +96,26 @@ def search_by_location
       puts
       puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
-      puts "Please enter the number for the job you would like to save: "
+      puts "Please enter the number for the job you would like to save: ".colorize(:green)
       user_saved_response = gets.chomp.to_i
-      if user_saved_response >= 0 && user_saved_response <= jobs_by_location.count
-        job = jobs_by_location[user_saved_response - 1]
-        hunter = JobHunter.last['id']
-        posting = JobPosting.find(job["id"])['id']
-        
-        # SavedPosting.destroy_all
 
+      #check to see if user response is valid
+      if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
+        #return the hash of the job that the job hunter wants to save
+        job = jobs_by_location[user_saved_response - 1]
+        #get the id of the most recently added jub hunter in the database
+        hunter = JobHunter.last['id']
+        #get the id of the job posting that matches the job they want to save
+        posting = JobPosting.find(job["id"])['id']
+
+        #save that job and user to the saved postings table in the database
         SavedPosting.find_or_create_by(
           job_hunter_id: hunter,
           job_posting_id: posting
         )
-        # binding.pry
-        puts "This job has been saved to your favorites."
+        puts "This job has been saved to your favorites.".colorize(:light_blue)
       else
-        puts "Please enter a valid response"
+        puts "Please enter a valid response".colorize(:red)
         search_by_location
       end
     else
