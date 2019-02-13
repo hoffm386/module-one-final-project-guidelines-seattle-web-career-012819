@@ -5,7 +5,6 @@ class CreateBooks < ActiveRecord::Migration[4.2]
             t.string :publish_date
             t.integer :page_count
             t.float :price
-            t.string :categories
         end
     end
 end
