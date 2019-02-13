@@ -82,9 +82,9 @@ def search_by_location
   user_location_response = gets.chomp.downcase
    jobs_by_location = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{user_location_response}%")
     if jobs_by_location.count > 0
-      puts "Here are the jobs in your area"
+      puts "Here are the jobs in your area:"
       puts
-      puts jobs_by_location.map {|job| "*" + job[:title]}
+      puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
     else
       puts "Sorry, there are no jobs in your area"
       search_by_location
@@ -95,14 +95,14 @@ def search_by_title
   puts "Please enter the job title you would like to search"
   user_job_title_response = gets.chomp.downcase
    jobs_by_title = JobPosting.where("job_postings.title LIKE ?", "%#{user_job_title_response}%")
-    if jobs_by_title.count > 0
-      puts "Here are the jobs in your area"
-      puts
-      puts jobs_by_title.map {|job| "*" + job[:title]}
-    else
-      puts "Sorry, there are no jobs that match this title"
-      search_by_title
-    end
+  if jobs_by_title.count > 0
+    puts "Here are the current openings with similar titles:"
+    puts
+    puts jobs_by_title.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+  else
+    puts "Sorry, there are no jobs that match this title"
+    search_by_title
+  end
 end
 
 def search_by_technologies
