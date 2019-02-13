@@ -1,4 +1,4 @@
-
+class CLI
 @@pokedex_array = []
 
 def welcome
@@ -15,8 +15,7 @@ def options
 end
 
 
-def option_answer(answer)
-    
+def option_answer(answer) 
     if answer == "1"
         catch_pokemons
     elsif answer == "2"
@@ -25,10 +24,10 @@ def option_answer(answer)
         statistics 
     elsif answer == "4"
         puts "Exiting ..."
+        exit
     else
         puts "Incorrect option, please try again!"
     end
-
 end
 
 
@@ -47,8 +46,7 @@ def catch_pokemons
         random_number = rand(1..2)
         if random_number == 1
             puts "You caught it! yay!"
-            @@pokedex_array << random_pokemon
-            
+            @@pokedex_array << random_pokemon    
         else 
             puts "Tough luck bub! You missed!" 
         end
@@ -62,11 +60,15 @@ def pokedex
     if answer == "1"
         puts "Please enter a Pokemon name"
         p_name = gets.chomp 
-        puts Pokemon.find_by(name: p_name)
-        
+        puts Pokemon.find_by(name: p_name)   
     elsif answer == "2"
         puts @@pokedex_array
     else  
         puts "Your answer is whack!"
+    end
+end
+
+    def statistics 
+
     end
 end
