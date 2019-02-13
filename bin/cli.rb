@@ -92,8 +92,17 @@ def search_by_location
 end
 
 def search_by_title
-puts "searching by title"
-
+  puts "Please enter the job title you would like to search"
+  user_job_title_response = gets.chomp.downcase
+   jobs_by_title = JobPosting.where("job_postings.title LIKE ?", "%#{user_job_title_response}%")
+    if jobs_by_title.count > 0
+      puts "Here are the jobs in your area"
+      puts
+      puts jobs_by_title.map {|job| job[:title]}
+    else
+      puts "Sorry, there are no jobs that match this title"
+      search_by_title
+    end
 end
 
 def search_by_technologies
