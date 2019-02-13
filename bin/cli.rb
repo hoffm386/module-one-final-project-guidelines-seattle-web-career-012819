@@ -91,17 +91,27 @@ def search_by_location
   puts "Please enter the location where you want to work".colorize(:green)
   user_location_response = gets.chomp.downcase
    jobs_by_location = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{user_location_response}%")
-    if jobs_by_location.count > 0
+   if jobs_by_location.count > 0
       puts "Here are the jobs in your area:".colorize(:green)
       puts
       puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
       puts "Please enter the number for the job you would like to save: "
-      user_saved_response = gets.chomp
-      binding.pry
-      if user_saved_response == jobs_by_location[user_saved_response.to_i - 1]
-        save_to_favorites
+      user_saved_response = gets.chomp.to_i
+      if user_saved_response >= 0 && user_saved_response < jobs_by_location.count
+        job = jobs_by_location[user_saved_response - 1]
+        hunter = JobHunter.where(id: job["id"]).first
+        posting = JobPosting.where(id: job["id"]).first
+        puts hunter
+        puts posting
+        SavedPosting.find_or_create_by(
+          job_hunter: hunter,
+          job_posting: posting
+        )
         puts "This job has been saved to your favorites."
+      else
+        puts "Please enter a valid response"
+        search_by_location
       end
     else
       puts "Sorry, there are no jobs in your area".colorize(:red)
@@ -156,7 +166,8 @@ def apply_job
 puts "what would you like to apply for"
 end
 
-
+def save_job_to_favorites
+end
 
 
 
