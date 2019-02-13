@@ -5,7 +5,7 @@ require 'pry'
 
 def get_pokemon_from_api
 seed_games
-response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=151')
+response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=20')
 response_hash = JSON.parse(response_string)
 
 response_hash["results"].each do |pokemon|
@@ -21,8 +21,16 @@ response_hash["results"].each do |pokemon|
       # binding.pry
       PokemonGame.create(pokemon_id: Pokemon.last.id, game_id: Game.find_by(name: x["version"]["name"].downcase).id)
     end
+    pokemon_url_hash["moves"].each do |m|
+      name = m["move"]["name"]
+      pokemon_move_string = RestClient.get(m["move"]["url"])
+      pokemon_move_hash = JSON.parse(pokemon_move_string)
+      # binding.pry
+      Move.create(name: name, accuracy: pokemon_move_hash["accuracy"], pp: pokemon_move_hash["pp"], damage: pokemon_move_hash["power"], move_type: pokemon_move_hash["type"]["name"] )
+      PokemonMove.create(pokemon_id: Pokemon.last.id, move_id: Move.last.id)
+    end
   end
-  binding.pry
+  
 end
 
 def seed_games

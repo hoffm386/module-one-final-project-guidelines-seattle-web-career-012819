@@ -5,7 +5,7 @@ class CreateMovesTable < ActiveRecord::Migration
            t.integer :accuracy
            t.integer :pp
            t.integer :damage
-           t.string :type 
+           t.string :move_type 
         end
     end
 end
