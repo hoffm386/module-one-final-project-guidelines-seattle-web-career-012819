@@ -5,7 +5,7 @@ require 'pry'
 
 def get_pokemon_from_api
 seed_games
-response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=20')
+response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=5')
 response_hash = JSON.parse(response_string)
 
 response_hash["results"].each do |pokemon|
@@ -64,3 +64,4 @@ def seed_games
   Game.create(name: "ultrasun", generation: 7, release_date: "2017")
   Game.create(name: "ultramoon", generation: 7, release_date: "2017")
 end
+
