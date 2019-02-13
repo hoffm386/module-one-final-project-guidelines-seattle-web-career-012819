@@ -80,11 +80,11 @@ end
 def search_by_location
   puts "Please enter the location where you want to work"
   user_location_response = gets.chomp.downcase
-   jobs_by_location = JobPosting.joins(:branch).where('LOWER(branches.location) = ?', user_location_response)
+   jobs_by_location = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{user_location_response}%")
     if jobs_by_location.count > 0
       puts "Here are the jobs in your area"
       puts
-      puts jobs_by_location.map {|job| "*" job[:title]}
+      puts jobs_by_location.map {|job| "*" + job[:title]}
     else
       puts "Sorry, there are no jobs in your area"
       search_by_location
