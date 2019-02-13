@@ -1,6 +1,6 @@
 require_relative '../config/environment'
 
-binding.pry
+main # begin running our app
 
 0
 
