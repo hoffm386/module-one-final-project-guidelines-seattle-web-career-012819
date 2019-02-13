@@ -30,7 +30,7 @@ response_hash["results"].each do |pokemon|
       PokemonMove.create(pokemon_id: Pokemon.last.id, move_id: Move.last.id)
     end
   end
-  
+
 end
 
 def seed_games
@@ -64,4 +64,3 @@ def seed_games
   Game.create(name: "ultrasun", generation: 7, release_date: "2017")
   Game.create(name: "ultramoon", generation: 7, release_date: "2017")
 end
-
