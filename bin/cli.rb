@@ -271,8 +271,14 @@ class CLI
     user_saved_response = gets.chomp.to_i
     job = job_titles[user_saved_response - 1]
     application_link = job.job_posting['application_link']
-  
-    binding.pry
+    
+    match = /href\s*=\s*"([^"]*)"/.match(application_link)
+    if match
+      url = match[1]
+    end
+    puts "Opening link to application".colorize(:green)
+    sleep(2)
+    system('open', url)
   end
 
   def save_job_to_favorites
