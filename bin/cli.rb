@@ -2,7 +2,7 @@ class CLI
 
 puts <<-EOF
 
-$$$$$$\  $$$$$$\ $$\           $$$$$$$\           $$\       $$\ 
+$$$$$$\  $$$$$$\ $$\           $$$$$$$\           $$\       $$\
 $$  __$$\ \_$$  _|$$ |          $$  __$$\          \__|      $$ |
 $$ /  \__|  $$ |$$$$$$\         $$ |  $$ |$$$$$$\  $$\  $$$$$$$ |
 $$ |$$$$\   $$ |\_$$  _|        $$$$$$$  |\____$$\ $$ |$$  __$$ |
@@ -13,7 +13,10 @@ $$ |  $$ |  $$ |  $$ |$$\       $$ |     $$  __$$ |$$ |$$ |  $$ |
 EOF
 
   def welcome
-    puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for."
+    JobHunter.destroy_all
+    puts
+    puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for.".colorize(:pink)
+    puts
     puts  "Have you already signed up (y/n)?".colorize(:green)
     sign_up_response = gets.chomp.downcase
     if sign_up_response == 'y'
@@ -31,10 +34,12 @@ EOF
       puts
       puts "Please enter your name"
       hunter_name = gets.chomp.downcase
-      puts "Welcome, #{hunter_name}!"
+      puts
+      puts "Welcome, #{hunter_name.capitalize}!".colorize(:light_blue)
       puts
       puts "Please enter the tecnhologies you are fluent in i.e. 'ruby,java,javascript' "
       hunter_tecnhologies = gets.chomp.downcase
+      puts
       puts "Please enter your current location"
       hunter_location = gets.chomp.downcase
 
@@ -44,8 +49,11 @@ EOF
         location: hunter_location
         )
 
-      puts "Thanks for signing up, #{hunter_name}. Your User ID is: #{current_job_hunter['id']}.".colorize(:light_blue)
+      puts "----------------------------------------------"
+      puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:red).underline
+      puts
       puts "Please use your User ID to access your saved jobs.".colorize(:green)
+      puts
       puts "Happy Searching!".colorize(:green)
       main_menu
   end
@@ -136,7 +144,7 @@ EOF
             puts "Please enter a valid response".colorize(:red)
             search_by_location
           end
-          puts "User ID is incorrect. Please search again.".colrize(:red)
+          puts "User ID is incorrect. Please search again.".colorize(:red)
           search_by_location
         end
         main_menu
@@ -171,7 +179,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = jobs_by_title[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = JobHunter.last['id']
+            hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
 
@@ -183,7 +191,7 @@ EOF
             puts "This job has been saved to your favorites.".colorize(:light_blue)
             main_menu
           end
-          puts "User ID is incorrect. Please search again.".colrize(:red)
+          puts "User ID is incorrect. Please search again.".colorize(:red)
           search_by_location
         end
       elsif want_to_save == 'n'
@@ -224,7 +232,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = jobs_by_technology[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = JobHunter.last['id']
+            hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
 
@@ -299,7 +307,7 @@ EOF
     user_saved_response = gets.chomp.to_i
     job = job_titles[user_saved_response - 1]
     application_link = job.job_posting['application_link']
-    
+
     match = /href\s*=\s*"([^"]*)"/.match(application_link)
     if match
       url = match[1]
@@ -309,6 +317,7 @@ EOF
     puts "Opening link to application".colorize(:green)
     sleep(2)
     system('open', url)
+    main_menu
   end
 
   def would_you_like_to_save?
