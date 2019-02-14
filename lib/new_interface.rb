@@ -1,15 +1,43 @@
 class UserInterface
-  attr_reader :authors, :books, :publishers, :book_deals
+  attr_reader :authors, :books, :publishers
+  attr_accessor :current_menu
 
-  def initialize(authors, books, publishers, book_deals)
+  def initialize(authors, books, publishers)
       @authors = authors
       @books = books
       @publishers = publishers
       @book_deals = book_deals
+      @current_menu = 0
   end
 
-  def menu_text(menu_index)
+  def get_user_input
+    # Format the input as a string and downcase it
+    user_input = gets.chomp.to_s.downcase
 
+    ### Assign a value to @current_menu
+
+    # If the user is entering /a, /b, /exit
+    if user_input.include?("/a")
+      # reload the current menu (don't change self.current_menu)
+    elsif user_input.include?("/b")
+      # go to the main menu
+      self.current_menu = 0
+    elsif user_input.include?("/exit")
+      # exit the program
+      self.current_menu = (-1)
+    else
+      # If the user is entering a number
+      if user_input.to_i > 1
+        self.current_menu = user_input.to_i
+      end
+    end
+
+    ### Show the appropriate menu
+    show_menu
+  end
+
+  def menu_text
+    # Define the array of data we can request from
     text_hash_array = [
       ### MAIN MENU ###
 
@@ -59,23 +87,57 @@ class UserInterface
       },
     ]
 
-    # Point to the hash at index "menu_index" and return it
-    text_hash_array[menu_index]
+    # If something isn't found, smaple from these phrases
+    oops_titles = [
+      "Oops!",
+      "Nothing To See Here...",
+      "Uh-oh!",
+      "Malfunction...",
+      "Danger, Will Robinson!",
+      "I'm... Having Difficulties."
+    ]
+
+    # Define the return data of this method.
+    return_data = text_hash_array[self.current_menu]
+
+    # If we are out of bounds of any options available...
+    if return_data == nil
+      self.current_menu = 0
+      return_data = text_hash_array[self.current_menu]
+      return_data[:title] = oops_titles.sample
+      return_data[:header] = "Sorry, we didn't recognize that command. Please try again:"
+    end
+
+    # Return the data
+    return_data
   end
 
-  def show_menu(menu_number, text_hash)
-    system("clear") # Clear the terminal
-    
+
+  def show_menu
+    if (self.current_menu == (-1) )
+      # we exit the program
+    elsif ()
+
+    text_hash = menu_text(self.current_menu)
     new_line = "\n" # Define our vertical spacer
 
-    # Display the title of this location in the program
+    system("clear") # Clear the terminal
+
+    # Display the title of this location in the program.
     puts "#{text_hash.title}#{new_line}"
 
-    # Display the header of this location in the program
+    # Display the header of this location in the program.
     puts "#{text_hash.header}#{new_line}"
 
-    # 
-    text_hash.header.each do |h|
+    # Display the body if there is one.
+    text_hash.body.each_with_index do |b, index|
+      puts "#{index}.\t#{b}"
+      if (index == text_hash.body.length - 1)
+        puts "#{new_line}" # Conditionally pad the bottom of the last item on the list
+      end
+    end
+
+    get_user_input
   end
 
   def greeting
