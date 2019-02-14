@@ -18,3 +18,11 @@ publisher_name_array.each do |publisher|
     name: publisher
   )
 end
+
+#adds book information (title, ect) to database
+book_array = api_names.add_book_title
+book_array.each do |book|
+  Book.create(
+    title: book
+  )
+end
