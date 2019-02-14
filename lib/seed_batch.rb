@@ -11,7 +11,7 @@ def generate_seeds_from_search_term(search_term)
 
   # Parse the "saleInfo" hash from the "items" array
   json_sales = parse_sales(json_items)
-
+  
   ### From Here, we can collect all necessary data ###
   ### for each class type. ###
   book_seeds = create_books(json_volumes, json_sales)
