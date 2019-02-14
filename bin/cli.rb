@@ -47,7 +47,7 @@ class CLI
       puts "---------------------"
       puts "2. See Saved Jobs".colorize(:color => :light_blue, :background => :white)
       puts "---------------------"
-      puts "3. Apply for job".colorize(:color => :light_blue, :background => :white)
+      puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
       puts "---------------------"
       main_menu_response = gets.chomp.downcase
 
@@ -254,7 +254,25 @@ class CLI
 
 
   def apply_job
-    puts "what would you like to apply for"
+    puts "Please enter your User ID: "
+    user_id_response = gets.chomp.to_i
+    current_job_hunter = JobHunter.where(:id => user_id_response)
+    if current_job_hunter
+      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      printed_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
+      job_titles = saved_postings.each_with_index.map {|posting| posting}
+      puts
+    else
+      puts "You have no saved job postings.".colorize(:red)
+      main_menu
+    end
+
+    puts "Please enter the number for the job you would like to apply for: ".colorize(:green)
+    user_saved_response = gets.chomp.to_i
+    job = job_titles[user_saved_response - 1]
+    application_link = job.job_posting['application_link']
+  
+    binding.pry
   end
 
   def save_job_to_favorites
