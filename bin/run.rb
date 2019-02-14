@@ -1,5 +1,8 @@
 require_relative '../config/environment'
 
+system "rake db:migrate"
+system "rake db:seed"
+
 menu = UserInterface.new(Author.all, Book.all, Publisher.all, BookDeal.all)
 
 menu.greeting
