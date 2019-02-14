@@ -1,7 +1,20 @@
 class CLI
 
+puts <<-EOF
+
+$$$$$$\  $$$$$$\ $$\           $$$$$$$\           $$\       $$\ 
+$$  __$$\ \_$$  _|$$ |          $$  __$$\          \__|      $$ |
+$$ /  \__|  $$ |$$$$$$\         $$ |  $$ |$$$$$$\  $$\  $$$$$$$ |
+$$ |$$$$\   $$ |\_$$  _|        $$$$$$$  |\____$$\ $$ |$$  __$$ |
+$$ |\_$$ |  $$ |  $$ |          $$  ____/ $$$$$$$ |$$ |$$ /  $$ |
+$$ |  $$ |  $$ |  $$ |$$\       $$ |     $$  __$$ |$$ |$$ |  $$ |
+\$$$$$$  |$$$$$$\ \$$$$  |      $$ |     \$$$$$$$ |$$ |\$$$$$$$ |
+ \______/ \______| \____/       \__|      \_______|\__| \_______|
+EOF
+
   def welcome
-    puts "Welcome to Dev Job Hunter! Have you already signed up (y/n)?".colorize(:green)
+    puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for."
+    puts  "Have you already signed up (y/n)?".colorize(:green)
     sign_up_response = gets.chomp.downcase
     if sign_up_response == 'y'
       main_menu
@@ -246,8 +259,23 @@ class CLI
       saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
       job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
       puts
+      jobs = saved_postings.each_with_index.map {|posting| posting}
     else
       puts "You have no saved job postings.".colorize(:red)
+      main_menu
+    end
+    puts "Would you like to delete a posting? (y/n)"
+    user_response_input = gets.chomp.downcase
+    if user_response_input == 'y'
+      puts 'Please enter the number of the job you would like to delete: '.colorize(:green)
+      user_delete_input = gets.chomp.to_i
+      job_to_delete = jobs[user_delete_input - 1]
+      job_to_delete.destroy
+      puts "Job successfully deleted. Here are your saved jobs: ".colorize(:light_blue)
+      puts
+      updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
+    else
       main_menu
     end
   end
@@ -275,16 +303,18 @@ class CLI
     match = /href\s*=\s*"([^"]*)"/.match(application_link)
     if match
       url = match[1]
+    else
+      puts "No url provided."
     end
     puts "Opening link to application".colorize(:green)
     sleep(2)
     system('open', url)
   end
 
-  def save_job_to_favorites
-
-  end
-
-
+  # def delete_saved_job
+  #   puts 'Please enter the number of the job you would like to delete: '.colorize(:green)
+  #   user_delete_input = gets.chomp.to_i
+  #   SavedPosting.where(user_delete_input == ).destroy
+  # end
 
 end #end of cli class
