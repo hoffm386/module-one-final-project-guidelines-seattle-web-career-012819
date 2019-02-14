@@ -13,15 +13,25 @@ class API_Hash
 
   def add_creator_names
     creator_array =[]
+    value_count =0
+    creator_hash = Hash.new(0)
     self.api_hash_data.each do |api|
       #if api.include?(["creator"])
       if api["creator"] != nil
-        creator_array << api["creator"]
+        # creator_array << api["creator"]
+        creator_hash[api["creator"]] += 1
       end
         #Creator.new(name: api["creator"])
       #end
     end
-   creator_array
+   #puts creator_hash.values.sort
+   k = creator_hash.each do |k, v|
+     if v > value_count
+       value_count = v
+       puts k
+     end
+   end
+   puts value_count
   end
 
   def add_publisher_names
