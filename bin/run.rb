@@ -1,6 +1,11 @@
 require_relative '../config/environment'
 
-main # begin running our app
+menu = UserInterface.new(Author.all, Book.all, Publisher.all, BookDeal.all)
+
+menu.greeting
+menu.cli_input
+
+# binding.pry
 
 0
 
