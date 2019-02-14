@@ -7,7 +7,7 @@ class CreateTrainer < ActiveRecord::Migration
            t.integer :p2
            t.integer :p3
            t.integer :p4
-           t.integer :p1
+           t.integer :p5
            t.integer :p6
         end
     end

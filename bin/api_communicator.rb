@@ -64,3 +64,10 @@ def seed_games
   Game.create(name: "ultrasun", generation: 7, release_date: "2017")
   Game.create(name: "ultramoon", generation: 7, release_date: "2017")
 end
+
+def seed_trainers
+Trainer.create(name: "Ash", flavor_text: "I'm having a major hat crisis!", p1: Pokemon.all.sample.id, p2: Pokemon.all.sample.id, p3: Pokemon.all.sample.id, p4: Pokemon.all.sample.id, p5: Pokemon.all.sample.id, p6: Pokemon.all.sample.id)
+Trainer.create(name: "Brock", flavor_text: "Hey! I know! I'll use my trusty frying pan as a drying pan!", p1: Pokemon.all.sample.id, p2: Pokemon.all.sample.id, p3: Pokemon.all.sample.id, p4: Pokemon.all.sample.id, p5: Pokemon.all.sample.id, p6: Pokemon.all.sample.id)
+Trainer.create(name: "Misty", flavor_text: "Pikachu! You're a Pika Pal!", p1: Pokemon.all.sample.id, p2: Pokemon.all.sample.id, p3: Pokemon.all.sample.id, p4: Pokemon.all.sample.id, p5: Pokemon.all.sample.id, p6: Pokemon.all.sample.id)
+Trainer.create(name: "Jessie + James", flavor_text: "Prepare for trouble! And make it double! To protect the world from devestation! To Unite all peoples within our nation! To denounce the evils fo truth and love! To extend our erach to the stars above! Jessie! James! Team Rocket blasts off at the speed of light! Surrender now, or prepare to fight!", p1: Pokemon.all.sample.id, p2: Pokemon.all.sample.id, p3: Pokemon.all.sample.id, p4: Pokemon.all.sample.id, p5: Pokemon.all.sample.id, p6: Pokemon.all.sample.id)
+end
