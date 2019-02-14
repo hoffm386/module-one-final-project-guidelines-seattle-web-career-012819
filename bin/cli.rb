@@ -108,7 +108,7 @@ EOF
     if jobs_by_location.count > 0
       puts "Here are the jobs in your area:".colorize(:green)
       puts
-      puts jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
       puts "Would you like to save any of these jobs? (y/n)"
       user_save_input = gets.chomp.downcase
@@ -142,6 +142,8 @@ EOF
           search_by_location
         end
         main_menu
+      elsif user_save_input == 'n'
+        main_menu
       end
     else
       puts "Sorry, there are no jobs in your area".colorize(:red)
@@ -157,7 +159,7 @@ EOF
     if jobs_by_title.count > 0
       puts "Here are the current openings with similar titles:".colorize(:green)
       puts
-      puts jobs_by_title.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      jobs_by_title.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
       puts "Would you like to save any of these jobs? (y/n)"
       user_save_response = gets.chomp.downcase
@@ -188,6 +190,8 @@ EOF
           puts "User ID is incorrect. Please search again.".colrize(:red)
           search_by_location
         end
+      elsif user_save_response == 'n'
+        main_menu
       else
         puts "Please enter a valid response".colorize(:red)
         search_by_title
@@ -209,11 +213,11 @@ EOF
     if jobs_by_technology.count > 0
       puts "Here are the jobs that match your search: "
       puts
-      puts jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
       puts "Would you like to save any of these jobs? (y/n)"
-      user_saved_response = gets.chomp.downcase
-      if user_saved_response == 'y'
+      user_save_response = gets.chomp.downcase
+      if user_save_response == 'y'
         puts "Please enter your User ID: "
         user_id_response = gets.chomp.to_i
         if JobHunter.where(:id => user_id_response)
@@ -241,6 +245,8 @@ EOF
           puts "User ID is incorrect. Please search again.".colorize(:red)
           search_by_technologies
         end
+      elsif user_save_response == 'n'
+        main_menu
       else
         puts "Please enter a valid response: ".colorize(:red)
         search_by_technologies
