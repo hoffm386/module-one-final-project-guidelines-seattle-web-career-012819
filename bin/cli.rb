@@ -299,6 +299,10 @@ EOF
       puts
       updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
+    elsif user_response_input == 'n'
+      puts "Returning to Main Menu".colorize(:color => :light_blue, :background => :white)
+      sleep(2)
+      main_menu
     else
       invalid_response
       saved_jobs
@@ -343,10 +347,13 @@ EOF
   end
 
   def update_location
-    puts "Please enter your new location"
-    new_location = gets.chomp.downcase
     user_id = enter_user_id
     current_job_hunter = JobHunter.find_by(:id => user_id)
+    current_location = current_job_hunter.location.split(" ")
+    puts "Your current location is #{current_location[0].capitalize + " " + current_location[1].capitalize }".colorize(:color => :light_blue,:background => :white)
+    puts
+    puts "Please enter your new location".colorize(:green)
+    new_location = gets.chomp.downcase
     if current_job_hunter
       current_job_hunter.update_column(:location, new_location)
       puts "Thanks for updating your location! Returning to Main Menu".colorize(:color => :light_blue,:background => :white)
@@ -360,9 +367,7 @@ EOF
 
 
   def exit
-    puts "Thanks for using GIT Paid. Goodbye!"
-    sleep(1)
-    Environment.Exit(0)
+    abort("Thanks for using GIT Paid. Goodbye!")
   end
 
   def would_you_like_to_save?
@@ -406,5 +411,56 @@ EOF
     puts "Whoops! This search didn't return any results. Please try again!".colorize(:red)
   end
 
-
+  def see_local_jobs
+    user_id = enter_user_id
+    current_job_hunter = JobHunter.find_by(:id => user_id)
+    current_location = current_job_hunter.location
+    puts "Your current location is #{current_location}".colorize(:color => :light_blue,:background => :white)
+    local_jobs = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{current_location}%")
+    local_jobs_count = local_jobs.each_with_index.map {|job,index|"#{index + 1}. #{job[:title]}"}
+    if local_jobs_count.count > 0
+      puts "Here are the jobs in your area:"
+      local_jobs.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
+      puts
+      want_to_save = would_you_like_to_save?
+      if want_to_save == 'y'
+        if JobHunter.find_by(:id => user_id)
+          puts "Please enter the number for the job you would like to save: ".colorize(:green)
+          user_saved_response = gets.chomp.to_i
+          #check to see if user response is valid
+          if user_saved_response > 0 && user_saved_response <= local_jobs.count
+            #return the hash of the job that the job hunter wants to save
+            job = local_jobs[user_saved_response - 1]
+            #get the id of the most recently added jub hunter in the database
+            hunter = user_id
+            #get the id of the job posting that matches the job they want to save
+            posting = JobPosting.find(job["id"])['id']
+            if JobPosting.find_by(:id => posting)
+              save_job(hunter,posting)
+              job_has_been_saved
+              main_menu
+            else
+              invalid_response
+              search_by_technologies
+            end
+          else
+          invalid_response
+          search_by_technologies
+          end
+        else
+          incorrect_id
+          search_by_technologies
+        end
+      elsif want_to_save == 'n'
+        main_menu
+      else
+        invalid_response
+        see_local_jobs
+      end
+    else
+    puts "There are no jobs in your area. Returning to main menu".colorize(:red)
+    sleep(2)
+    main_menu
+    end
+  end
 end #end of cli class
