@@ -13,7 +13,6 @@ $$ |  $$ |  $$ |  $$ |$$\       $$ |     $$  __$$ |$$ |$$ |  $$ |
 EOF
 
   def welcome
-    JobHunter.destroy_all
     puts
     puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for.".colorize(:pink)
     puts
@@ -24,64 +23,57 @@ EOF
     elsif sign_up_response == 'n'
       sign_up
     else
-      puts "That's not a valid command".colorize(:red)
-      return self.welcome
+      puts "Please enter a valid command".colorize(:red)
+      welcome
     end
   end
 
   def sign_up
-      puts "Welcome to the Dev Job Hunter sign up!".colorize(:green)
-      puts
-      puts "Please enter your name"
-      hunter_name = gets.chomp.downcase
-      puts
-      puts "Welcome, #{hunter_name.capitalize}!".colorize(:light_blue)
-      puts
-      puts "Please enter the tecnhologies you are fluent in i.e. 'ruby,java,javascript' "
-      hunter_tecnhologies = gets.chomp.downcase
-      puts
-      puts "Please enter your current location"
-      hunter_location = gets.chomp.downcase
-
-      current_job_hunter = JobHunter.find_or_create_by(
-        name: hunter_name,
-        skills: hunter_tecnhologies,
-        location: hunter_location
-        )
-
-      puts "----------------------------------------------"
-      puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:red).underline
-      puts
-      puts "Please use your User ID to access your saved jobs.".colorize(:green)
-      puts
-      puts "Happy Searching!".colorize(:green)
-      main_menu
+    puts "Welcome to the Dev Job Hunter sign up!".colorize(:green)
+    puts
+    puts "Please enter your name".colorize(:green)
+    hunter_name = gets.chomp.downcase
+    puts
+    puts "Welcome, #{hunter_name.capitalize}!".colorize(:color => :light_blue, :background => :white)
+    puts
+    puts "Please enter the tecnhologies you are fluent in i.e. ruby,java,javascript".colorize(:green)
+    hunter_tecnhologies = gets.chomp.downcase
+    puts
+    puts "Please enter your current location".colorize(:green)
+    hunter_location = gets.chomp.downcase
+    current_job_hunter = create_job_hunter(hunter_name,hunter_tecnhologies,hunter_location)
+    puts "----------------------------------------------"
+    puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:color =>:light_blue, :background => :white)
+    puts
+    puts "Please use your User ID to access your saved jobs.".colorize(:green)
+    puts
+    puts "Happy Searching!".colorize(:green)
+    main_menu
   end
 
   #** create sign in method (asks for your user id, makes sure that id exists in the jobhunters table, and returns that number)
 
   def main_menu
-      puts
-      puts "What would you like to do?".colorize(:green)
-      puts "---------------------"
-      puts "1. Search Developer Jobs".colorize(:color => :light_blue, :background => :white)
-      puts "---------------------"
-      puts "2. See Saved Jobs".colorize(:color => :light_blue, :background => :white)
-      puts "---------------------"
-      puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
-      puts "---------------------"
-      main_menu_response = gets.chomp.downcase
-
-      if main_menu_response[0] == "1"
-        search_jobs
-      elsif main_menu_response[0] == "2"
-        saved_jobs
-      elsif main_menu_response[0] == "3"
-        apply_job
-      else
-        puts "That is not a valid command".colorize(:red)
-        main_menu
-      end
+    puts
+    puts "What would you like to do?".colorize(:color => :light_blue, :background =>:white)
+    puts "---------------------"
+    puts "1. Search Developer Jobs".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "2. See Saved Jobs".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    main_menu_response = gets.chomp.downcase
+    if main_menu_response[0] == "1"
+      search_jobs
+    elsif main_menu_response[0] == "2"
+      saved_jobs
+    elsif main_menu_response[0] == "3"
+      apply_job
+    else
+      puts "Please enter a valid command".colorize(:red)
+      main_menu
+    end
   end
 
   def search_jobs
@@ -103,7 +95,7 @@ EOF
     elsif search_jobs_response[0] == "3"
       search_by_technologies
     else
-      puts "That is not a valid command".colorize(:red)
+      puts "Please enter a valid command".colorize(:red)
       search_jobs
     end
   end
@@ -126,14 +118,9 @@ EOF
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
           if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
-            #return the hash of the job that the job hunter wants to save
             job = jobs_by_location[user_saved_response - 1]
-            #get the id of the most recently added jub hunter in the database
             hunter = user_id
-            #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
-
-            #save that job and user to the saved postings table in the database
             save_job(hunter,posting)
             puts "This job has been saved to your favorites.".colorize(:light_blue)
             main_menu
@@ -141,8 +128,7 @@ EOF
             puts "Please enter a valid response".colorize(:red)
             search_by_location
           end
-          puts "User ID is incorrect. Please search again.".colorize(:red)
-          search_by_location
+          incorrect_id
         end
         main_menu
       elsif want_to_save == 'n'
@@ -179,14 +165,10 @@ EOF
             hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
-
-            #save that job and user to the saved postings table in the database
             save_job(hunter,posting)
-            puts "This job has been saved to your favorites.".colorize(:light_blue)
-            main_menu
+            job_has_been_saved
           end
-          puts "User ID is incorrect. Please search again.".colorize(:red)
-          search_by_location
+          incorrect_id
         end
       elsif want_to_save == 'n'
         main_menu
@@ -231,8 +213,7 @@ EOF
             posting = JobPosting.find(job["id"])['id']
 
             save_job(hunter,posting)
-            puts "This job has been saved to your favorites.".colorize(:light_blue)
-            main_menu
+            job_has_been_saved
           end
           puts "User ID is incorrect. Please search again.".colorize(:red)
           search_by_technologies
@@ -280,9 +261,9 @@ EOF
 
 
   def apply_job
-    puts "Please enter your User ID: "
-    user_id_response = gets.chomp.to_i
-    current_job_hunter = JobHunter.where(:id => user_id_response)
+    user_id = enter_user_id
+    current_job_hunter = JobHunter.where(:id => user_id)
+
     if current_job_hunter
       saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
       printed_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
@@ -311,12 +292,12 @@ EOF
   end
 
   def would_you_like_to_save?
-    puts "Would you like to save any of these jobs? (y/n)"
+    puts "Would you like to save any of these jobs? (y/n)".colorize(:green)
     user_save_input = gets.chomp.downcase
   end
 
   def enter_user_id
-    puts "Please enter your User ID: "
+    puts "Please enter your User ID: ".colorize(:green)
     user_id_response = gets.chomp.to_i
   end
 
@@ -332,4 +313,16 @@ EOF
     search_by_technologies
   end
 
+  def job_has_been_saved
+    puts "This job has been saved to your favorites.".colorize(:light_blue)
+    main_menu
+  end
+
+  def create_job_hunter(hunter_name,hunter_tecnhologies,hunter_location)
+    current_job_hunter = JobHunter.find_or_create_by(
+      name: hunter_name,
+      skills: hunter_tecnhologies,
+      location: hunter_location
+      )
+  end
 end #end of cli class
