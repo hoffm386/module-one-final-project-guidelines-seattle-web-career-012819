@@ -1,10 +1,8 @@
-class CreateCreators < ActiveRecord::Migration[5.0]
+class CreateCreators < ActiveRecord::Migration[5.2]
   def change
     create_table :creators do |t|
       t.string :name
-
       t.timestamps
     end
   end
-
 end
