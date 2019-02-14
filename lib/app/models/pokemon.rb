@@ -8,8 +8,8 @@ class Pokemon < ActiveRecord::Base
       str = ""
       str += "Name: #{self.name.capitalize}\n"
       str+= "HP: #{self.hp}\n"
-      str += "Height: #{self.height}\n"
-      str += "Weight: #{self.weight}\n"
+      str += "Height: #{self.height}\"\n"
+      str += "Weight: #{self.weight}lbs\n"
       str+= "Type 1: #{self.type1.capitalize}\n"
 
       if self.type2 != nil

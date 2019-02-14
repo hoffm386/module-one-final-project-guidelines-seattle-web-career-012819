@@ -39,17 +39,18 @@ class Battle
   end
 
   def main_battle_loop
-    battle_welcome 
+    battle_welcome
     choice = battle_option
     while choice != 3
       battle_choice(choice)
-      if opp_poke_hp_check == true 
+      if opp_poke_hp_check == true
         opp_change_poke
       end
       opp_attack
-      if curr_poke_hp_check == true 
+      if curr_poke_hp_check == true
         curr_change_poke
       end
+      win_or_loose
     end
   end
 
@@ -64,23 +65,22 @@ class Battle
     if battle_answer == "1"
       battle_fight
     elsif battle_answer == "2"
-      change_pokemon
+      curr_change_poke
     elsif battle_answer == "3"
       forefeit
-    else  
+    else
       puts "Your answer is whack!"
     end
   end
 
-  def battle_fight 
-    binding.pry
+  def battle_fight
     puts "Choose your move!"
     puts "1. " + Move.find(curr_poke.move1).name
     puts "2. " + Move.find(curr_poke.move2).name
     puts "3. " + Move.find(curr_poke.move3).name
     puts "4. " + Move.find(curr_poke.move4).name
-    
-    answer = gets.chomp 
+
+    answer = gets.chomp
     if answer == "1"
       @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move1).damage.to_i)
       puts "You did #{Move.find(curr_poke.move1).damage.to_i} to #{@opp_poke.name}"
@@ -90,19 +90,19 @@ class Battle
       puts "You did #{Move.find(curr_poke.move2).damage.to_i} to #{@opp_poke.name}"
       puts "Their hp is now #{@opp_team[opp_poke]}"
     elsif answer == "3"
-     @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move3).damage.to_i) 
+     @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move3).damage.to_i)
      puts "You did #{Move.find(curr_poke.move3).damage.to_i} to #{@opp_poke.name}"
       puts "Their hp is now #{@opp_team[opp_poke]}"
     elsif answer == "4"
       @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move4).damage.to_i)
       puts "You did #{Move.find(curr_poke.move4).damage.to_i} to #{@opp_poke.name}"
       puts "Their hp is now #{@opp_team[opp_poke]}"
-    else 
+    else
       puts "Your answer is whack yo!"
     end
   end
 
-  def opp_attack 
+  def opp_attack
     arr = []
     arr << Move.find(opp_poke.move1)
     arr << Move.find(opp_poke.move2)
@@ -111,32 +111,51 @@ class Battle
     arr.sample
     m_name = Move.find(arr.sample.id)
     dmg = m_name.damage.to_i
-    @curr_team[@curr_poke] = (@curr_team[curr_poke] - dmg)
-    puts "Trainer.name used #{m_name.name}"
-    binding.pry
+    @our_team[@curr_poke] = (@our_team[@curr_poke] - dmg)
+    puts "#{@trainer.name} used #{m_name.name}"
   end
-  
+
   def opp_poke_hp_check
-    if @opp_team[@opp_poke] <= 0 
-      return true 
-    else 
+    if @opp_team[@opp_poke] <= 0
+      puts "#{@opp_poke.name} has fainted"
+      return true
+    else
       return false
     end
   end
 
   def curr_poke_hp_check
-    if @curr_team[@curr_poke] <= 0 
-      return true 
-    else 
+    if @our_team[@curr_poke] <= 0
+      puts "#{@curr_poke.name} has fainted"
+      return true
+    else
       return false
     end
   end
 
+#show off code
   def opp_change_poke
-    arr = @opp_team.collect do |p|
+    arr = @opp_team.select do |p|
       @opp_team[p] > 0
     end
-    @opp_poke = arr.sample
+    @opp_poke = arr.keys.sample
+    puts "#{@trainer.name} sent out #{@opp_poke.name}"
+  end
+
+  def curr_change_poke
+    puts "Please pick a pokemon to send out"
+    @our_team.each do |k,v|
+      puts "#{k.name} -> HP: #{v}"
+    end
+    puts "please type in their name"
+    answer = gets.chomp
+
+    if @our_team[answer.downcase] > 0
+      @curr_poke = @@our_team[answer.downcase]
+    else
+      puts "This pokemon dead"
+      curr_change_poke
+    end
   end
 
   def win_or_loose
@@ -151,7 +170,8 @@ class Battle
 
   def win_condition
     arr = @opp_team.collect do |pokemon|
-      @opp_team[pokemon] <= 0
+      binding.pry
+      pokemon[1] <= 0
     end
     if arr.include?(false)
       return false
@@ -162,7 +182,7 @@ class Battle
 
   def loose_condition
     arr = @our_team.collect do |pokemon|
-      @our_team[pokemon] <= 0
+      pokemon[1] <= 0
     end
     if arr.include?(false)
       return false
