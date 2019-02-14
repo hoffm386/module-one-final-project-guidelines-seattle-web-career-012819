@@ -2,14 +2,14 @@ class CLI
 
 puts <<-EOF
 
-$$$$$$\  $$$$$$\ $$\           $$$$$$$\           $$\       $$\
-$$  __$$\ \_$$  _|$$ |          $$  __$$\          \__|      $$ |
-$$ /  \__|  $$ |$$$$$$\         $$ |  $$ |$$$$$$\  $$\  $$$$$$$ |
-$$ |$$$$\   $$ |\_$$  _|        $$$$$$$  |\____$$\ $$ |$$  __$$ |
-$$ |\_$$ |  $$ |  $$ |          $$  ____/ $$$$$$$ |$$ |$$ /  $$ |
-$$ |  $$ |  $$ |  $$ |$$\       $$ |     $$  __$$ |$$ |$$ |  $$ |
-\$$$$$$  |$$$$$$\ \$$$$  |      $$ |     \$$$$$$$ |$$ |\$$$$$$$ |
- \______/ \______| \____/       \__|      \_______|\__| \_______|
+$$$$$$\\  $$$$$$\\ $$\\           $$$$$$$\\           $$\\       $$\\
+$$  __$$\\ \\_$$  _|$$ |          $$  __$$\\          \\__|      $$ |
+$$ /  \\__|  $$ |$$$$$$\\         $$ |  $$ |$$$$$$\\  $$\\  $$$$$$$ |
+$$ |$$$$\\   $$ |\\_$$  _|        $$$$$$$  |\\____$$\\ $$ |$$  __$$ |
+$$ |\\_$$ |  $$ |  $$ |          $$  ____/ $$$$$$$ |$$ |$$ /  $$ |
+$$ |  $$ |  $$ |  $$ |$$\\       $$ |     $$  __$$ |$$ |$$ |  $$ |
+\\$$$$$$  |$$$$$$\\ \\$$$$  |      $$ |     \\$$$$$$$ |$$ |\\$$$$$$$ |
+ \\______/ \\______| \\____/       \\__|      \\_______|\\__| \\_______|
 EOF
 
   def welcome
@@ -48,6 +48,7 @@ EOF
     puts "Please use your User ID to access your saved jobs.".colorize(:green)
     puts
     puts "Happy Searching!".colorize(:green)
+    sleep(2)
     main_menu
   end
 
@@ -308,19 +309,25 @@ EOF
 
     puts "Please enter the number for the job you would like to apply for: ".colorize(:green)
     user_saved_response = gets.chomp.to_i
-    job = job_titles[user_saved_response - 1]
-    application_link = job.job_posting['application_link']
+    if user_saved_response > 0 && user_saved_response <= job_titles.count
+      job = job_titles[user_saved_response - 1]
+      application_link = job.job_posting['application_link']
 
-    match = /href\s*=\s*"([^"]*)"/.match(application_link)
-    if match
-      url = match[1]
+
+      match = /href\s*=\s*"([^"]*)"/.match(application_link)
+      if match
+        url = match[1]
+      else
+        puts "No url provided."
+      end
+      puts "Opening link to application".colorize(:green)
+      sleep(2)
+      system('open', url)
+      main_menu
     else
-      puts "No url provided."
+      invalid_response
+      apply_job
     end
-    puts "Opening link to application".colorize(:green)
-    sleep(2)
-    system('open', url)
-    main_menu
   end
 
   def would_you_like_to_save?
