@@ -8,6 +8,18 @@ class UserInterface
         @book_deals = book_deals
     end
 
+    def menu_text(menu_number)
+      output_array = []
+
+      headings = [
+        "Welcome to Bibs' & Beans' Book Breaker!",
+        "Book Search by Title",
+        "Book Search by Author",
+        "Book Search by Publisher",
+        "Book Search by Genre"
+      ] 
+    end
+    
     def greeting
         puts "\n"
         puts "Welcome to Bib & Beans' Book Breaker!"
