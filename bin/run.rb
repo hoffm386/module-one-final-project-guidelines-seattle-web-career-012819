@@ -4,10 +4,9 @@ system "rake db:drop"
 system "rake db:migrate"
 system "rake db:seed"
 
-menu = UserInterface.new(Author.all, Book.all, Publisher.all, BookDeal.all)
+cli = UserInterface.new(Author.all, Book.all, Publisher.all)
 
-menu.greeting
-menu.cli_input
+cli.show_menu
 
 # binding.pry
 

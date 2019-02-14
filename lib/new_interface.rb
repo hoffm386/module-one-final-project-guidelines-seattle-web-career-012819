@@ -1,13 +1,13 @@
 class UserInterface
   attr_reader :authors, :books, :publishers
-  attr_accessor :current_menu
+  attr_accessor :current_menu, :expect_search_term
 
   def initialize(authors, books, publishers)
       @authors = authors
       @books = books
       @publishers = publishers
-      @book_deals = book_deals
       @current_menu = 0
+      @expect_search_term = false
   end
 
   def get_user_input
@@ -25,15 +25,15 @@ class UserInterface
     elsif user_input.include?("/exit")
       # exit the program
       self.current_menu = (-1)
-    else
-      # If the user is entering a number
-      if user_input.to_i > 1
-        self.current_menu = user_input.to_i
-      end
+    elsif user_input.to_i > 0
+      # Set the current_menu to the one the user chose.
+      self.current_menu = user_input.to_i
+      # Expect a search term.
+      self.expect_search_term = true
     end
 
-    ### Show the appropriate menu
-    show_menu
+    ### Show the appropriate menu and pass the input from the user.
+    return show_menu(user_input)
   end
 
   def menu_text
@@ -112,32 +112,67 @@ class UserInterface
     return_data
   end
 
-
-  def show_menu
+  def show_menu(menu_command)
     if (self.current_menu == (-1) )
       # we exit the program
-    elsif ()
+      return exit_program
+    else
+      text_hash = menu_text
 
-    text_hash = menu_text(self.current_menu)
-    new_line = "\n" # Define our vertical spacer
+      new_line = "\n\n" # Define our vertical spacer
 
-    system("clear") # Clear the terminal
-
-    # Display the title of this location in the program.
-    puts "#{text_hash.title}#{new_line}"
-
-    # Display the header of this location in the program.
-    puts "#{text_hash.header}#{new_line}"
-
-    # Display the body if there is one.
-    text_hash.body.each_with_index do |b, index|
-      puts "#{index}.\t#{b}"
-      if (index == text_hash.body.length - 1)
-        puts "#{new_line}" # Conditionally pad the bottom of the last item on the list
+      # If we are expecting a search term
+      if self.expect_search_term
+        results_body = get_data_from_menu_command
+        text_hash[:body] = results_body
       end
-    end
 
-    get_user_input
+      system("clear") # Clear the terminal
+
+      # Display the title of this location in the program.
+      puts "#{text_hash[:title]}#{new_line}"
+
+      # Display the header of this location in the program.
+      puts "#{text_hash[:header]}#{new_line}"
+
+      # Display the body if there is one.
+      text_hash[:body].each_with_index do |b, index|
+        puts "#{index+1}.\t#{b}"
+        if (index == text_hash[:body].length - 1)
+          puts "#{new_line}" # Conditionally pad the bottom of the last item on the list
+        end
+      end
+
+      # Display the footer every menu gets.
+      footer_msg = [
+        "You may also type:#{new_line}",
+        "\/b to go back to the menu\n",
+        "\/a to search by title again\n",
+        "\/exit to leave the program.#{new_line}"
+      ]
+
+      footer_msg.each_with_index do |f, index|
+        if index==0
+          puts "#{f}"
+        else
+          puts "*\t#{f}"
+        end
+      end
+
+      return get_user_input
+    end
+  end
+
+  def exit_program
+    # Clear the terminal
+    system("clear")
+
+    # Say goodbye
+    puts "Thanks for stopping by!"
+  end
+
+  def get_data_from_menu_command
+    #
   end
 
   def greeting
