@@ -11,23 +11,26 @@ class UserInterface
     def menu_text(menu_number)
       output_array = []
 
-      headings = [
-        "Welcome to Bibs' & Beans' Book Breaker!",
+      strings_to_return = [
+        {
+          heading: "Welcome to Bibs' & Beans' Book Breaker!",
+          prompt: "Please type a number and press ENTER, or type \"exit\" to quit."
+        }
         "Book Search by Title",
         "Book Search by Author",
         "Book Search by Publisher",
         "Book Search by Genre"
-      ] 
+      ]
     end
-    
+
     def greeting
-        puts "\n"
-        puts "Welcome to Bib & Beans' Book Breaker!"
-        puts "\n"
+      pad = "\n\n"
+      puts "Welcome to Bibs' & Beans' Book Breaker!".prepend(pad) << pad
     end
 
     def cli_input
-        greeting = ["What would you like to do?",
+        greeting = [
+          "What would you like to do?",
           "1: Find a book by its title",
           "2: Find all books by an author",
           "3: Find all books by publisher",
@@ -36,6 +39,7 @@ class UserInterface
           "10: Bib & Beans' recommendations",
           "11: I got what I came for, bye guys!"
       ]
+      
       puts "#{greeting.join("\n")}"
         input = gets.chomp
         if input.to_i == 1
