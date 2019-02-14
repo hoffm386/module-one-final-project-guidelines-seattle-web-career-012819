@@ -46,7 +46,8 @@ class Command_line_interface
   end
 
   def books_by_publisher
-    print "Which publisher has most authors?"
+    print "3. Which publisher has most authors?"
+    puts "   a.- ,  b"
     #publisher_name = gets.chomp
     # publisher = Publisher.find_by name: publisher_name
     # puts publisher.books.map {|book| "#{book.name} | #{book.creator.name}"}
