@@ -7,6 +7,7 @@ class CreatePokemon < ActiveRecord::Migration
             t.string :type1
             t.string :type2
             t.string :url
+            t.integer :hp
         end
     end
 end

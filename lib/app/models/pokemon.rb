@@ -6,13 +6,14 @@ class Pokemon < ActiveRecord::Base
 
     def print
       str = ""
-      str += "Name: #{self.name}\n"
+      str += "Name: #{self.name.capitalize}\n"
+      str+= "HP: #{self.hp}\n"
       str += "Height: #{self.height}\n"
       str += "Weight: #{self.weight}\n"
-      str+= "Type 1: #{self.type1}\n"
+      str+= "Type 1: #{self.type1.capitalize}\n"
 
       if self.type2 != nil
-        str+= "Type 2: #{self.type2}\n"
+        str+= "Type 2: #{self.type2.capitalize}\n"
       end
 
       str+= "URL: #{self.url}\n"

@@ -5,16 +5,16 @@ require 'pry'
 
 def get_pokemon_from_api
 seed_games
-response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=5')
+response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=7')
 response_hash = JSON.parse(response_string)
 
 response_hash["results"].each do |pokemon|
     pokemon_url_string = RestClient.get(pokemon["url"])
     pokemon_url_hash = JSON.parse(pokemon_url_string)
     if (pokemon_url_hash["types"].size == 1)
-      Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"])
+      Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"], hp: pokemon_url_hash["stats"].last["base_stat"])
     else
-      Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"], type2: pokemon_url_hash["types"][1]["type"]["name"])
+      Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"], type2: pokemon_url_hash["types"][1]["type"]["name"], hp: pokemon_url_hash["stats"].last["base_stat"])
     end
 
     pokemon_url_hash["game_indices"].each do |x|

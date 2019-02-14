@@ -1,12 +1,18 @@
+require "pry"
+
 class CLI
 @@pokedex_array = []
 
-    def run 
+    def pokedex_array
+      @@pokedex_array
+    end
+
+    def run
     # get_pokemon_from_api()
     seed_trainers
     welcome
     choice = options
-        while choice != 4 
+        while choice != 4
             option_answer(choice)
             choice = options
         end
@@ -21,7 +27,7 @@ class CLI
         puts "Choose an option"
         puts "1. Catch a Pokemon"
         puts "2. Pokedex"
-        puts "3. Statistics"
+        puts "3. Battle a Trainer!"
         puts "4. Exit"
         answer = gets.chomp
     end
@@ -33,7 +39,7 @@ class CLI
         elsif answer == "2"
             pokedex
         elsif answer == "3"
-            statistics
+            battle
         elsif answer == "4"
             puts "Exiting ..."
             exit
@@ -87,6 +93,11 @@ class CLI
         else
             puts "Your answer is whack!"
         end
+    end
+
+    def battle
+      @@pokedex_array = [Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample]
+      b = Battle.new(Trainer.all.sample, self)
     end
 
 end
