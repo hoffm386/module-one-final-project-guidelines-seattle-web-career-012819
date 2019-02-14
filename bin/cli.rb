@@ -8,7 +8,7 @@ class CLI
     end
 
     def run
-    # get_pokemon_from_api()
+    #get_pokemon_from_api()
     seed_trainers
     welcome
     choice = options
@@ -98,6 +98,7 @@ class CLI
     def battle
       @@pokedex_array = [Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample]
       b = Battle.new(Trainer.all.sample, self)
+      b.main_battle_loop
     end
 
 end

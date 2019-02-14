@@ -28,9 +28,14 @@ response_hash["results"].each do |pokemon|
       # binding.pry
       Move.create(name: name, accuracy: pokemon_move_hash["accuracy"], pp: pokemon_move_hash["pp"], damage: pokemon_move_hash["power"], move_type: pokemon_move_hash["type"]["name"] )
       PokemonMove.create(pokemon_id: Pokemon.last.id, move_id: Move.last.id)
+      
     end
-  end
-
+      Pokemon.all.last.update_attribute(:move1, Pokemon.all.last.moves.sample.id)
+      Pokemon.all.last.update_attribute(:move2, Pokemon.all.last.moves.sample.id)
+      Pokemon.all.last.update_attribute(:move3, Pokemon.all.last.moves.sample.id)
+      Pokemon.all.last.update_attribute(:move4, Pokemon.all.last.moves.sample.id)
+    end
+  
 end
 
 def seed_games

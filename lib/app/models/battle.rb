@@ -1,7 +1,7 @@
 require "pry"
 
 class Battle
-  attr_accessor :trainer, :our_team, :opp_team, :cli
+  attr_accessor :trainer, :our_team, :opp_team, :cli, :curr_poke, :opp_poke
 
   def initialize(trainer, cli)
     @trainer = trainer
@@ -9,6 +9,8 @@ class Battle
     @opp_team = {}
     @cli = cli
     load_teams
+    @curr_poke = @our_team.keys[0]
+    @opp_poke = @opp_team.keys[0]
   end
 
   def load_teams
@@ -30,6 +32,66 @@ class Battle
     @opp_team[Pokemon.find(@trainer.p5)] = Pokemon.find(@trainer.p5).hp
     @opp_team[Pokemon.find(@trainer.p6)] = Pokemon.find(@trainer.p6).hp
   end
+
+  def battle_welcome
+    puts "!!!"
+    puts @trainer.flavor_text
+  end
+
+  def main_battle_loop
+    battle_welcome 
+    battle_choice(battle_option)
+  end
+
+  def battle_option
+    puts "1. Fight"
+    puts "2. Change"
+    puts "3. Forfeit"
+    answer = gets.chomp
+  end
+
+  def battle_choice(battle_answer)
+    if battle_answer == "1"
+      battle_fight
+    elsif battle_answer == "2"
+      change_pokemon
+    elsif battle_answer == "3"
+      forefeit
+    else  
+      puts "Your answer is whack!"
+    end
+  end
+
+  def battle_fight 
+    binding.pry
+    puts "Choose your move!"
+    puts "1. " + Move.find(curr_poke.move1).name
+    puts "2. " + Move.find(curr_poke.move2).name
+    puts "3. " + Move.find(curr_poke.move3).name
+    puts "4. " + Move.find(curr_poke.move4).name
+    
+    answer = gets.chomp 
+    if answer == "1"
+      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move1).damage.to_i)
+      puts "You did #{Move.find(curr_poke.move1).damage.to_i} to #{@opp_poke.name}"
+      puts "Their hp is now #{@opp_team[opp_poke]}"
+    elsif answer == "2"
+      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move2).damage.to_i)
+      puts "You did #{Move.find(curr_poke.move2).damage.to_i} to #{@opp_poke.name}"
+      puts "Their hp is now #{@opp_team[opp_poke]}"
+    elsif answer == "3"
+     @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move3).damage.to_i) 
+     puts "You did #{Move.find(curr_poke.move3).damage.to_i} to #{@opp_poke.name}"
+      puts "Their hp is now #{@opp_team[opp_poke]}"
+    elsif answer == "4"
+      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move4).damage.to_i)
+      puts "You did #{Move.find(curr_poke.move4).damage.to_i} to #{@opp_poke.name}"
+      puts "Their hp is now #{@opp_team[opp_poke]}"
+    else 
+      puts "Your answer is whack yo!"
+    end
+  end
+
 
   def win_or_loose
     if win_condition == true
