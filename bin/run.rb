@@ -12,6 +12,10 @@ require_relative "../lib/API/command_line_interface.rb"
 # 0
 api01 = API_Hash.new
 #api01.api_hash_data
+
+api01.add_creator_names
+
 api01.add_book_title
+
 # binding.pry
 # 0
