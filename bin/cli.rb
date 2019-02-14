@@ -110,12 +110,10 @@ EOF
       puts
       jobs_by_location.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
-      puts "Would you like to save any of these jobs? (y/n)"
-      user_save_input = gets.chomp.downcase
-      if user_save_input == 'y'
-        puts "Please enter your User ID: "
-        user_id_response = gets.chomp.to_i
-        if JobHunter.where(:id => user_id_response).exists?
+      want_to_save = would_you_like_to_save?
+      if want_to_save == 'y'
+        user_id = enter_user_id
+        if JobHunter.where(:id => user_id).exists?
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -123,7 +121,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = jobs_by_location[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = user_id_response
+            hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
 
@@ -142,7 +140,7 @@ EOF
           search_by_location
         end
         main_menu
-      elsif user_save_input == 'n'
+      elsif want_to_save == 'n'
         main_menu
       end
     else
@@ -161,13 +159,11 @@ EOF
       puts
       jobs_by_title.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
-      puts "Would you like to save any of these jobs? (y/n)"
-      user_save_response = gets.chomp.downcase
-      if user_save_response == 'y'
-        puts "Please enter your User ID: "
-        user_id_response = gets.chomp.to_i
+      want_to_save = would_you_like_to_save?
+      if want_to_save == 'y'
+        user_id = enter_user_id
         #*****************can we make this check for the unique id of this actual user?*********************
-        if JobHunter.where(:id => user_id_response).exists?
+        if JobHunter.where(:id => user_id).exists?
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -190,7 +186,7 @@ EOF
           puts "User ID is incorrect. Please search again.".colrize(:red)
           search_by_location
         end
-      elsif user_save_response == 'n'
+      elsif want_to_save == 'n'
         main_menu
       else
         puts "Please enter a valid response".colorize(:red)
@@ -215,12 +211,10 @@ EOF
       puts
       jobs_by_technology.each_with_index.map {|job,index| puts "#{index + 1}. #{job[:title]}"}
       puts
-      puts "Would you like to save any of these jobs? (y/n)"
-      user_save_response = gets.chomp.downcase
-      if user_save_response == 'y'
-        puts "Please enter your User ID: "
-        user_id_response = gets.chomp.to_i
-        if JobHunter.where(:id => user_id_response)
+      want_to_save = would_you_like_to_save?
+      if want_to_save == 'y'
+        user_id = enter_user_id
+        if JobHunter.where(:id => user_id)
 
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
@@ -245,7 +239,7 @@ EOF
           puts "User ID is incorrect. Please search again.".colorize(:red)
           search_by_technologies
         end
-      elsif user_save_response == 'n'
+      elsif want_to_save == 'n'
         main_menu
       else
         puts "Please enter a valid response: ".colorize(:red)
@@ -315,6 +309,16 @@ EOF
     puts "Opening link to application".colorize(:green)
     sleep(2)
     system('open', url)
+  end
+
+  def would_you_like_to_save?
+    puts "Would you like to save any of these jobs? (y/n)"
+    user_save_input = gets.chomp.downcase
+  end
+
+  def enter_user_id
+    puts "Please enter your User ID: "
+    user_id_response = gets.chomp.to_i
   end
 
 end #end of cli class
