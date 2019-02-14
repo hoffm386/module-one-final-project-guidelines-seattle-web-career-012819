@@ -1,5 +1,4 @@
 class CLI
-
 puts <<-EOF
 
  $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\
@@ -19,7 +18,14 @@ EOF
     puts  "Have you already signed up (y/n)?".colorize(:green)
     sign_up_response = gets.chomp.downcase
     if sign_up_response == 'y'
-      main_menu
+      @@user_id = enter_user_id
+      if JobHunter.find_by(:id => @@user_id)
+        puts "Sign in successful".colorize(:color => :light_blue, :background => :white)
+        main_menu
+      else
+        incorrect_id
+        welcome
+      end
     elsif sign_up_response == 'n'
       sign_up
     else
@@ -45,18 +51,16 @@ EOF
     puts "----------------------------------------------"
     puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:color =>:light_blue, :background => :white)
     puts
-    puts "Please use your User ID to access your saved jobs.".colorize(:green)
-    puts
-    puts "Happy Searching!".colorize(:green)
-    sleep(2)
-    main_menu
+    puts "Returning to Home".colorize(:color => :light_blue, :background => :white)
+    sleep(1)
+    welcome
   end
 
   #** create sign in method (asks for your user id, makes sure that id exists in the jobhunters table, and returns that number)
 
   def main_menu
     puts
-    puts "What would you like to do?".colorize(:color => :light_blue, :background =>:white)
+    puts "What would you like to do? Please enter a number:".colorize(:green)
     puts "---------------------"
     puts "1. Search Developer Jobs".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
@@ -66,7 +70,9 @@ EOF
     puts "---------------------"
     puts "4. Have You Moved? Update Location Here".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
-    puts "5. Exit Program".colorize(:color => :light_blue, :background => :white)
+    puts "5. Sign Out".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "6. Exit Program".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
     main_menu_response = gets.chomp.downcase
     if main_menu_response == "1"
@@ -78,6 +84,11 @@ EOF
     elsif main_menu_response == "4"
       update_location
     elsif main_menu_response == "5"
+      @@user_id = nil
+      puts "Signing out"
+      sleep(1)
+      welcome
+    elsif main_menu_response == "6"
       exit
     else
       invalid_response
@@ -95,7 +106,7 @@ EOF
     puts "---------------------"
     puts "3. Search by title".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
-    puts "4. Search by tecnhologies".colorize(:color => :light_blue, :background => :white)
+    puts "4. Search by technologies".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
     search_jobs_response = gets.chomp.downcase
 
@@ -125,14 +136,13 @@ EOF
       puts
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
-        user_id = enter_user_id
-        if JobHunter.find_by(:id => user_id)
+        if JobHunter.find_by(:id => @@user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
           if user_saved_response > 0 && user_saved_response <= jobs_by_location.count
             job = jobs_by_location[user_saved_response - 1]
-            hunter = user_id
+            hunter = @@user_id
             posting = JobPosting.find(job["id"])['id']
             if JobPosting.find_by(:id => posting)
               save_job(hunter,posting)
@@ -174,9 +184,7 @@ EOF
       puts
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
-        user_id = enter_user_id
-        #*****************can we make this check for the unique id of this actual user?*********************
-        if JobHunter.find_by(:id => user_id)
+        if JobHunter.find_by(:id => @@user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -184,7 +192,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = jobs_by_title[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = user_id
+            hunter = @@user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
             if JobPosting.find_by(:id => posting)
@@ -230,8 +238,7 @@ EOF
       puts
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
-        user_id = enter_user_id
-        if JobHunter.find_by(:id => user_id)
+        if JobHunter.find_by(:id => @@user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -239,7 +246,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = jobs_by_technology[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = user_id
+            hunter = @@user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
             if JobPosting.find_by(:id => posting)
@@ -271,10 +278,11 @@ EOF
   end
 
   def saved_jobs
-    user_id = enter_user_id
-    current_job_hunter = JobHunter.find_by(:id => user_id)
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
     if current_job_hunter
       saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
+      puts "Here are your saved jobs:".colorize(:color => :light_blue, :background => :white)
+      puts
       job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
       puts
       jobs = saved_postings.each_with_index.map {|posting| posting}
@@ -298,10 +306,12 @@ EOF
       end
       puts
       updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
+      puts "Here is your updated list of jobs:".colorize(:color => :light_blue, :background => :white)
+      puts
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
     elsif user_response_input == 'n'
       puts "Returning to Main Menu".colorize(:color => :light_blue, :background => :white)
-      sleep(2)
+      sleep(1)
       main_menu
     else
       invalid_response
@@ -311,8 +321,7 @@ EOF
 
 
   def apply_job
-    user_id = enter_user_id
-    current_job_hunter = JobHunter.find_by(:id => user_id)
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
     if current_job_hunter
       saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
       printed_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
@@ -337,7 +346,7 @@ EOF
         puts "No url provided."
       end
       puts "Opening link to application".colorize(:green)
-      sleep(2)
+      sleep(1)
       system('open', url)
       main_menu
     else
@@ -347,17 +356,16 @@ EOF
   end
 
   def update_location
-    user_id = enter_user_id
-    current_job_hunter = JobHunter.find_by(:id => user_id)
-    current_location = current_job_hunter.location.split(" ")
-    puts "Your current location is #{current_location[0].capitalize + " " + current_location[1].capitalize }".colorize(:color => :light_blue,:background => :white)
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
+    current_location = current_job_hunter.location
+    puts "Your current location is #{current_location.capitalize}".colorize(:color => :light_blue,:background => :white)
     puts
     puts "Please enter your new location".colorize(:green)
     new_location = gets.chomp.downcase
     if current_job_hunter
       current_job_hunter.update_column(:location, new_location)
       puts "Thanks for updating your location! Returning to Main Menu".colorize(:color => :light_blue,:background => :white)
-      sleep(2)
+      sleep(1)
       main_menu
     else
       incorrect_id
@@ -367,7 +375,7 @@ EOF
 
 
   def exit
-    abort("Thanks for using GIT Paid. Goodbye!")
+    abort("Thanks for using GIT Paid. Goodbye!").colorize(:color => :light_blue, :background => :white)
   end
 
   def would_you_like_to_save?
@@ -412,8 +420,7 @@ EOF
   end
 
   def see_local_jobs
-    user_id = enter_user_id
-    current_job_hunter = JobHunter.find_by(:id => user_id)
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
     current_location = current_job_hunter.location
     puts "Your current location is #{current_location}".colorize(:color => :light_blue,:background => :white)
     local_jobs = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{current_location}%")
@@ -424,7 +431,7 @@ EOF
       puts
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
-        if JobHunter.find_by(:id => user_id)
+        if JobHunter.find_by(:id => @@user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -432,7 +439,7 @@ EOF
             #return the hash of the job that the job hunter wants to save
             job = local_jobs[user_saved_response - 1]
             #get the id of the most recently added jub hunter in the database
-            hunter = user_id
+            hunter = @@user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
             if JobPosting.find_by(:id => posting)
@@ -459,7 +466,7 @@ EOF
       end
     else
     puts "There are no jobs in your area. Returning to main menu".colorize(:red)
-    sleep(2)
+    sleep(1)
     main_menu
     end
   end
