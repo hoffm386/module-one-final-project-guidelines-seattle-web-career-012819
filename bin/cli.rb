@@ -317,10 +317,4 @@ EOF
     system('open', url)
   end
 
-  # def delete_saved_job
-  #   puts 'Please enter the number of the job you would like to delete: '.colorize(:green)
-  #   user_delete_input = gets.chomp.to_i
-  #   SavedPosting.where(user_delete_input == ).destroy
-  # end
-
 end #end of cli class
