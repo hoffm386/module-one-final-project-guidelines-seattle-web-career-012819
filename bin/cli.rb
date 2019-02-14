@@ -2,7 +2,7 @@ class CLI
 
 puts <<-EOF
 
- $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\ 
+ $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\
 $$  __$$\\ \\_$$  _|\\__$$  __|      $$  __$$\\          \\__|      $$ |
 $$ /  \\__|  $$ |     $$ |         $$ |  $$ |$$$$$$\\  $$\\  $$$$$$$ |
 $$ |$$$$\\   $$ |     $$ |         $$$$$$$  |\\____$$\\ $$ |$$  __$$ |
@@ -64,6 +64,10 @@ EOF
     puts "---------------------"
     puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
+    puts "4. Have You Moved? Update Location Here".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "5. Exit Program".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
     main_menu_response = gets.chomp.downcase
     if main_menu_response == "1"
       search_jobs
@@ -71,6 +75,10 @@ EOF
       saved_jobs
     elsif main_menu_response == "3"
       apply_job
+    elsif main_menu_response == "4"
+      update_location
+    elsif main_menu_response == "5"
+      exit
     else
       invalid_response
       main_menu
@@ -81,19 +89,23 @@ EOF
     puts
     puts "How would you like to search?".colorize(:green)
     puts
-    puts "1. Search by location".colorize(:color => :light_blue, :background => :white)
+    puts "1. See local jobs".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
-    puts "2. Search by title".colorize(:color => :light_blue, :background => :white)
+    puts "2. Search by location".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
-    puts "3. Search by tecnhologies".colorize(:color => :light_blue, :background => :white)
+    puts "3. Search by title".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "4. Search by tecnhologies".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
     search_jobs_response = gets.chomp.downcase
 
     if search_jobs_response == "1"
-      search_by_location
+      see_local_jobs
     elsif search_jobs_response == "2"
-      search_by_title
+      search_by_location
     elsif search_jobs_response == "3"
+      search_by_title
+    elsif search_jobs_response == "4"
       search_by_technologies
     else
       invalid_response
@@ -328,6 +340,29 @@ EOF
       invalid_response
       apply_job
     end
+  end
+
+  def update_location
+    puts "Please enter your new location"
+    new_location = gets.chomp.downcase
+    user_id = enter_user_id
+    current_job_hunter = JobHunter.find_by(:id => user_id)
+    if current_job_hunter
+      current_job_hunter.update_column(:location, new_location)
+      puts "Thanks for updating your location! Returning to Main Menu".colorize(:color => :light_blue,:background => :white)
+      sleep(2)
+      main_menu
+    else
+      incorrect_id
+      update_location
+    end
+  end
+
+
+  def exit
+    puts "Thanks for using GIT Paid. Goodbye!"
+    sleep(1)
+    Environment.Exit(0)
   end
 
   def would_you_like_to_save?
