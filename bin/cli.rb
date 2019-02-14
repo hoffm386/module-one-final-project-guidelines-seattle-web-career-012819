@@ -14,7 +14,7 @@ EOF
 
   def welcome
     puts
-    puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for.".colorize(:pink)
+    puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for.".colorize(:color => :blue, :background => :white)
     puts
     puts  "Have you already signed up (y/n)?".colorize(:green)
     sign_up_response = gets.chomp.downcase
@@ -23,7 +23,7 @@ EOF
     elsif sign_up_response == 'n'
       sign_up
     else
-      puts "Please enter a valid command".colorize(:red)
+      invalid_response
       welcome
     end
   end
@@ -64,14 +64,14 @@ EOF
     puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
     puts "---------------------"
     main_menu_response = gets.chomp.downcase
-    if main_menu_response[0] == "1"
+    if main_menu_response == "1"
       search_jobs
-    elsif main_menu_response[0] == "2"
+    elsif main_menu_response == "2"
       saved_jobs
-    elsif main_menu_response[0] == "3"
+    elsif main_menu_response == "3"
       apply_job
     else
-      puts "Please enter a valid command".colorize(:red)
+      invalid_response
       main_menu
     end
   end
@@ -88,14 +88,14 @@ EOF
     puts "---------------------"
     search_jobs_response = gets.chomp.downcase
 
-    if search_jobs_response[0] == "1"
+    if search_jobs_response == "1"
       search_by_location
-    elsif search_jobs_response[0] == "2"
+    elsif search_jobs_response == "2"
       search_by_title
-    elsif search_jobs_response[0] == "3"
+    elsif search_jobs_response == "3"
       search_by_technologies
     else
-      puts "Please enter a valid command".colorize(:red)
+      invalid_response
       search_jobs
     end
   end
@@ -113,7 +113,7 @@ EOF
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
         user_id = enter_user_id
-        if JobHunter.where(:id => user_id).exists?
+        if JobHunter.find_by(:id => user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -121,21 +121,30 @@ EOF
             job = jobs_by_location[user_saved_response - 1]
             hunter = user_id
             posting = JobPosting.find(job["id"])['id']
-            save_job(hunter,posting)
-            puts "This job has been saved to your favorites.".colorize(:light_blue)
-            main_menu
+            if JobPosting.find_by(:id => posting)
+              save_job(hunter,posting)
+              job_has_been_saved
+              main_menu
+            else
+              invalid_response
+              search_by_location
+            end
           else
-            puts "Please enter a valid response".colorize(:red)
+            invalid_response
             search_by_location
           end
+        else
           incorrect_id
+          search_by_location
         end
-        main_menu
       elsif want_to_save == 'n'
         main_menu
+      else
+        invalid_response
+        search_by_location
       end
     else
-      puts "Sorry, there are no jobs in your area".colorize(:red)
+      no_results
       search_by_location
     end
   end
@@ -154,7 +163,7 @@ EOF
       if want_to_save == 'y'
         user_id = enter_user_id
         #*****************can we make this check for the unique id of this actual user?*********************
-        if JobHunter.where(:id => user_id).exists?
+        if JobHunter.find_by(:id => user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
           #check to see if user response is valid
@@ -165,19 +174,30 @@ EOF
             hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
-            save_job(hunter,posting)
-            job_has_been_saved
+            if JobPosting.find_by(:id => posting)
+              save_job(hunter,posting)
+              job_has_been_saved
+              main_menu
+            else
+              invalid_response
+              search_by_title
+            end
+          else
+            invalid_response
+            search_by_title
           end
+        else
           incorrect_id
+          search_by_title
         end
       elsif want_to_save == 'n'
         main_menu
       else
-        puts "Please enter a valid response".colorize(:red)
+        invalid_response
         search_by_title
       end
     else
-      puts "Sorry, there are no jobs in your area".colorize(:red)
+      no_results
       search_by_title
     end
   end
@@ -198,11 +218,9 @@ EOF
       want_to_save = would_you_like_to_save?
       if want_to_save == 'y'
         user_id = enter_user_id
-        if JobHunter.where(:id => user_id)
-
+        if JobHunter.find_by(:id => user_id)
           puts "Please enter the number for the job you would like to save: ".colorize(:green)
           user_saved_response = gets.chomp.to_i
-
           #check to see if user response is valid
           if user_saved_response > 0 && user_saved_response <= jobs_by_technology.count
             #return the hash of the job that the job hunter wants to save
@@ -211,67 +229,81 @@ EOF
             hunter = user_id
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
-
-            save_job(hunter,posting)
-            job_has_been_saved
+            if JobPosting.find_by(:id => posting)
+              save_job(hunter,posting)
+              job_has_been_saved
+              main_menu
+            else
+              invalid_response
+              search_by_technologies
+            end
+          else
+          invalid_response
+          search_by_technologies
           end
-          puts "User ID is incorrect. Please search again.".colorize(:red)
+        else
+          incorrect_id
           search_by_technologies
         end
       elsif want_to_save == 'n'
         main_menu
       else
-        puts "Please enter a valid response: ".colorize(:red)
+        invalid_response
         search_by_technologies
       end
     else
-      puts "Sorry, there are no jobs in your area".colorize(:red)
+      no_results
       search_by_technologies
     end
   end
 
   def saved_jobs
-    puts "Please enter your User ID: "
-    user_id_response = gets.chomp.to_i
-    current_job_hunter = JobHunter.where(:id => user_id_response)
+    user_id = enter_user_id
+    current_job_hunter = JobHunter.find_by(:id => user_id)
     if current_job_hunter
-      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
       job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
       puts
       jobs = saved_postings.each_with_index.map {|posting| posting}
     else
-      puts "You have no saved job postings.".colorize(:red)
-      main_menu
+      incorrect_id
+      saved_jobs
     end
     puts "Would you like to delete a posting? (y/n)"
     user_response_input = gets.chomp.downcase
     if user_response_input == 'y'
       puts 'Please enter the number of the job you would like to delete: '.colorize(:green)
       user_delete_input = gets.chomp.to_i
-      job_to_delete = jobs[user_delete_input - 1]
-      job_to_delete.destroy
-      puts "Job successfully deleted. Here are your saved jobs: ".colorize(:light_blue)
+      if user_delete_input > 0 && user_delete_input <= jobs.count
+        job_to_delete = jobs[user_delete_input - 1]
+        job_to_delete.destroy
+        puts "Job successfully deleted. Here are your saved jobs: ".colorize(:light_blue)
+        main_menu
+      else
+        invalid_response
+        saved_jobs
+      end
       puts
-      updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
     else
-      main_menu
+      invalid_response
+      saved_jobs
     end
   end
 
 
   def apply_job
     user_id = enter_user_id
-    current_job_hunter = JobHunter.where(:id => user_id)
-
+    current_job_hunter = JobHunter.find_by(:id => user_id)
     if current_job_hunter
-      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.ids)
+      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
       printed_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
       job_titles = saved_postings.each_with_index.map {|posting| posting}
       puts
     else
-      puts "You have no saved job postings.".colorize(:red)
-      main_menu
+      incorrect_id
+      apply_job
     end
 
     puts "Please enter the number for the job you would like to apply for: ".colorize(:green)
@@ -309,13 +341,11 @@ EOF
   end
 
   def incorrect_id
-    puts "User ID is incorrect. Please search again.".colorize(:red)
-    search_by_technologies
+    puts "User ID is incorrect. Please try again.".colorize(:red)
   end
 
   def job_has_been_saved
     puts "This job has been saved to your favorites.".colorize(:light_blue)
-    main_menu
   end
 
   def create_job_hunter(hunter_name,hunter_tecnhologies,hunter_location)
@@ -325,4 +355,14 @@ EOF
       location: hunter_location
       )
   end
+
+  def invalid_response
+    puts "Please enter a valid command!".colorize(:red)
+  end
+
+  def no_results
+    puts "Whoops! This search didn't return any results. Please try again!".colorize(:red)
+  end
+
+
 end #end of cli class
