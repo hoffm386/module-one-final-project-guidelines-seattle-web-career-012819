@@ -9,6 +9,7 @@ class UserInterface
     end
 
     def greeting
+        puts "\n"
         puts "Welcome to Bib & Beans' Book Breaker!"
         puts "\n"
     end
@@ -20,7 +21,8 @@ class UserInterface
           "3: Find all books by publisher",
           "4: Find books by genre",
           "6: Play BookRoulette",
-          "11. I got what I came for, bye Bib & Beans!"
+          "10: Bib & Beans' recommendations",
+          "11: I got what I came for, bye guys!"
       ]
       puts "#{greeting.join("\n")}"
         input = gets.chomp
@@ -33,14 +35,26 @@ class UserInterface
         elsif input.to_i == 4
           cli_runner("Please provide a keyword for your genre:", method(:books_by_genre))
         elsif input.to_i == 6
+          puts "\n"
           puts "Pick your poison:"
           puts "\n"
           book_roulette
+        elsif input.to_i == 10
+            puts "\n"
+            puts "..."
+            sleep(1.second) 
+            puts "We can't read."
+            puts "\n"
+            sleep(1.second) 
+            return cli_input
         elsif input.to_i == 11
           cli_end
-        elsif
-          puts "That's not an option!"
-          cli_input
+        else
+          arr = ["That's not an option!", "Are you crazy?", "Try again I guess", "Not sure about that..."]
+          puts "\n"
+          puts arr.sample
+          puts "\n"
+          return cli_input
         end
     end
 
