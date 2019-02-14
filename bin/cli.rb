@@ -375,8 +375,8 @@ EOF
 
 
   def exit
-    abort("Thanks for using GIT Paid. Goodbye!").colorize(:color => :light_blue, :background => :white)
-  end
+    abort("Thanks for using GIT Paid. Goodbye!".colorize(:color => :light_blue, :background => :white))
+  end 
 
   def would_you_like_to_save?
     puts "Would you like to save any of these jobs? (y/n)".colorize(:green)
