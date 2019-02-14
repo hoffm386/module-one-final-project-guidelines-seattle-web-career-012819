@@ -40,7 +40,17 @@ class Battle
 
   def main_battle_loop
     battle_welcome 
-    battle_choice(battle_option)
+    choice = battle_options
+    while choice != 3
+      battle_choice(choice)
+      if opp_poke_hp_check == true 
+        opp_change_poke
+      end
+      opp_attack
+      if curr_poke_hp_check == true 
+        curr_change_poke
+      end
+    end
   end
 
   def battle_option
@@ -92,6 +102,40 @@ class Battle
     end
   end
 
+  def opp_attack 
+    arr << Move.find(opp_poke.move1)
+    arr << Move.find(opp_poke.move2)
+    arr << Move.find(opp_poke.move3)
+    arr << Move.find(opp_poke.move4)
+    arr.sample
+    m_name = Move.find(arr.sample)
+    dmg = m_name.damage.to_i
+    @curr_team[@curr_poke] = (@curr_team[curr_poke] - dmg)
+    puts "Trainer.name used #{m_name.name}"
+  end
+  
+  def opp_poke_hp_check
+    if @opp_team[@opp_poke] <= 0 
+      return true 
+    else 
+      return false
+    end
+  end
+
+  def curr_poke_hp_check
+    if @curr_team[@curr_poke] <= 0 
+      return true 
+    else 
+      return false
+    end
+  end
+
+  def opp_change_poke
+    arr = @opp_team.collect do |p|
+      opp_team[p] > 0
+    end
+    @opp_poke = arr.sample
+  end
 
   def win_or_loose
     if win_condition == true
