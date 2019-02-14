@@ -58,7 +58,7 @@ class UserInterface
         ],
         # spacer will be printed inside of the menu
 
-        # every menu gets this appended at the bottom by default
+        # every menu gets this appended at the bottom by default:
         
           # "You may also type:",
           # "/b to go back to the menu",
@@ -172,7 +172,13 @@ class UserInterface
   end
 
   def get_data_from_menu_command
-    #
+    methods_array[
+      method(:find_books_by_title),
+      method(:find_books_by_author),
+      method(:find_books_by_publisher),
+      method(:find_books_by_genre),
+    ]
+    methods_array[self.current_menu]
   end
 
   def greeting
