@@ -3,19 +3,9 @@ require_relative "../lib/API/api_communicator.rb"
 require_relative "../lib/API/command_line_interface.rb"
 
 #call methods here
-#api_hash_data
-# c1 = Command_line_interface.new
-# c1.welcome
-# c1.user_answer_input
-#
-#
-# 0
-api01 = API_Hash.new
-#api01.api_hash_data
+CLI = Command_line_interface.new
 
-api01.add_creator_names
-
-api01.add_book_title
+CLI.books_by_publisher
 
 # binding.pry
 # 0
