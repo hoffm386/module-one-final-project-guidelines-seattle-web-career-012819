@@ -134,10 +134,7 @@ EOF
             posting = JobPosting.find(job["id"])['id']
 
             #save that job and user to the saved postings table in the database
-            SavedPosting.find_or_create_by(
-              job_hunter_id: hunter,
-              job_posting_id: posting
-            )
+            save_job(hunter,posting)
             puts "This job has been saved to your favorites.".colorize(:light_blue)
             main_menu
           else
@@ -184,10 +181,7 @@ EOF
             posting = JobPosting.find(job["id"])['id']
 
             #save that job and user to the saved postings table in the database
-            SavedPosting.find_or_create_by(
-              job_hunter_id: hunter,
-              job_posting_id: posting
-            )
+            save_job(hunter,posting)
             puts "This job has been saved to your favorites.".colorize(:light_blue)
             main_menu
           end
@@ -236,11 +230,7 @@ EOF
             #get the id of the job posting that matches the job they want to save
             posting = JobPosting.find(job["id"])['id']
 
-            #save that job and user to the saved postings table in the database
-            SavedPosting.find_or_create_by(
-              job_hunter_id: hunter,
-              job_posting_id: posting
-            )
+            save_job(hunter,posting)
             puts "This job has been saved to your favorites.".colorize(:light_blue)
             main_menu
           end
@@ -328,6 +318,18 @@ EOF
   def enter_user_id
     puts "Please enter your User ID: "
     user_id_response = gets.chomp.to_i
+  end
+
+  def save_job(hunter,posting)
+    SavedPosting.find_or_create_by(
+      job_hunter_id: hunter,
+      job_posting_id: posting
+    )
+  end
+
+  def incorrect_id
+    puts "User ID is incorrect. Please search again.".colorize(:red)
+    search_by_technologies
   end
 
 end #end of cli class
