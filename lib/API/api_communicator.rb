@@ -15,9 +15,8 @@ class API_Hash
       if api["creator"] == nil
          creator_array << "Unknown Authors"
        else
-         # TODO: Ellen add handling for birth/death years
-         # TODO: Ellen add handling for trailing commas
-         last_char = publisher_name[-1]
+         # TODO: Add handling for birth/death years
+         # TODO: Add handling for trailing commas
          creator_array << api["creator"]
       end
     end
@@ -60,6 +59,5 @@ class API_Hash
     end
     book_title_array
   end
-
 
 end #end of class

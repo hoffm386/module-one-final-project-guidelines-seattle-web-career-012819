@@ -2,8 +2,18 @@ class Command_line_interface
   @@stars = 0
   # Introduction to the Guessing Game
   def welcome
-    puts "********* Welcome to the Library Trivia Game *********"
-    puts "(Please choose the correct answers for each questions)"
+      puts "           LIBRARY TRIVIA GAME"
+      puts
+      puts "     ************       ************"
+      puts "     *  _______     *     _______  *"
+      puts "     *  _______     *     _______  *"
+      puts "     *  _______     *     _______  *"
+      puts "     *  _______     *     _______  *"
+      puts "     *  _______     *     _______  *"
+      puts "     *              *              *"
+      puts "     ************       ************"
+      puts "                   ***"
+      puts
   end
 
   # Method to get back the user's answer in each question
@@ -28,6 +38,7 @@ class Command_line_interface
   end
   # Question 1: Which author has written the most books?
   def author_most_book
+    welcome
     most_authors = nil
     book_count =0
     @@wrong_answer_array = [] #this array contains all wrong answers
@@ -51,6 +62,7 @@ class Command_line_interface
     answer = self.user_answer
     if answer == "a" || answer == "A"
       puts `clear`
+      system("clear")
       puts
       puts "Correct!! #{most_authors} has written #{book_count} books"
       @@stars += 1
@@ -59,12 +71,15 @@ class Command_line_interface
       puts
       puts "*****************************************************"
       puts "*****************************************************"
+      puts
     else
+      puts `clear`
+      system("clear")
       puts
       puts "Incorrect, please try again"
       puts "*****************************************************"
       puts "*****************************************************"
-      puts `clear`
+      puts
       self.author_most_book
     end
   end #end of method
@@ -96,20 +111,23 @@ class Command_line_interface
     user_guess = self.user_answer
     # Check user's answer
     if user_guess == "c" || user_guess == "C"
-      puts 'clear'
+      system("clear")
       puts "Great job! #{author.name} did write #{book_by_author[0]}!"
       puts
       @@stars += 1
       puts
       puts "You have gained #{@@stars} Stars."
       puts
-      puts "**************************************************"
       puts "*****************************************************"
+      puts "*****************************************************"
+      puts
     else
+      system("clear")
       puts
       puts "Incorrect. Try again."
       puts "*****************************************************"
-      puts 'clear'
+      puts "*****************************************************"
+      puts
       self.books_by_author
     end
   end
@@ -138,7 +156,7 @@ class Command_line_interface
     puts "   c. #{publisher_name}"
     user_choice = self.user_answer
     if user_choice == "c" || user_choice == "C"
-      puts `clear`
+      system("clear")
       puts
       puts "Correct!!, #{publisher_name} has #{author_count} authors."
       puts
@@ -147,12 +165,15 @@ class Command_line_interface
       puts "You have gained #{@@stars} Stars."
       puts
       puts "**********************************************************"
-      puts "*****************************************************"
+      puts "**********************************************************"
+      puts
     else
+      system("clear")
       puts
       puts "Incorrect, Please try again"
-      puts "*****************************************************"
-      puts `clear`
+      puts "**********************************************************"
+      puts "**********************************************************"
+      puts
       self.books_by_publisher
     end
   end
@@ -161,7 +182,8 @@ class Command_line_interface
   # Question 4
   def author_of_book
     # Set the book that the question will search for the author of
-    book_name = self.book_names.sample
+    index_random = rand(1..6)
+    book_name = self.book_names[index_random]
 
     # Find the author that created the book
     book = Book.find_by name: book_name
@@ -183,7 +205,7 @@ class Command_line_interface
 
     # Check user's answer
     if user_guess == "b" || user_guess == "B"
-      puts 'clear'
+      system("clear")
       puts
       puts "Great job! #{book_name} was written by #{author.name}!"
       puts
@@ -194,11 +216,14 @@ class Command_line_interface
       puts
       puts "*****************************************************"
       puts "*****************************************************"
+      puts
     else
+      system("clear")
       puts
       puts "Incorrect. Try again."
       puts "*****************************************************"
-      puts 'clear'
+      puts "*****************************************************"
+      puts
       self.author_of_book
     end
   end
@@ -219,7 +244,7 @@ class Command_line_interface
     end
     digital_percent = digital_count / total_count.to_f * 100 #36.9% digital
     physical_percent = physical_count / total_count.to_f * 100 #63.1% physical
-    puts "Of total checkouts, choose the percent usage for Physical and Digital formats."
+    puts "5. Of total checkouts, choose the percent usage for Physical and Digital formats."
     puts
     puts "   a.Physical #{physical_percent - 20}%, #{digital_percent +20}%."
     puts
@@ -228,20 +253,24 @@ class Command_line_interface
     puts "   c.Physical #{digital_percent}, Digital #{physical_percent}%."
     user_choice = self.user_answer
     if user_choice == "b" || user_choice == "B"
-      puts `clear`
+      system("clear")
       puts
       puts "Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages."
       puts
       @@stars += 1
+      puts
       puts "You have gained #{@@stars} Stars."
       puts
-      puts "*****************************************************"
-      puts "*****************************************************"
+      puts "THANK YOU FOR PLAYING"
+      puts
+      puts
     else
+      system("clear")
       puts
       puts "Incorrect, Please try again"
       puts "*****************************************************"
-      puts `clear`
+      puts "*****************************************************"
+      puts
       self.usage_class_percentage
       end
     end
