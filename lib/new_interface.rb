@@ -23,7 +23,7 @@ class UserInterface
       method(:grab_bag),
       method(:find_cheapest_book),
       method(:missing_method_1),
-      method(:missing_method_2),
+      method(:books_by_page_count),
       method(:bibs_n_beans),
       method(:exit_program)
     ]
@@ -51,7 +51,7 @@ class UserInterface
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
           "Missing 1 (?)",
-          "Missing 2 (?)",
+          "Find Books by Length",
           "Bibs' & Beans' Recommendations"
         ]
         # spacer will be printed inside of the menu
@@ -115,7 +115,7 @@ class UserInterface
       },
 
       {
-        title: "Missing 2 (?)",
+        title: "Find Books by Length",
         header: "Something:",
         body: []
       },
@@ -158,7 +158,7 @@ class UserInterface
       # we exit the program
       return exit_program
     else
-      if ( self.current_menu == 6 || self.current_menu == 7 || self.current_menu == 10 )
+      if ( self.current_menu == 6 || self.current_menu == 7 || self.current_menu == 9 || self.current_menu == 10 )
         divert_to_fancy_method = true
       end
 
@@ -360,41 +360,10 @@ class UserInterface
     end
 
     ans.each do |book|
-      return_data << "#{book.title}, by #{book.authors[0].name}."
+      return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
     end
     return_data
   end
-
-  # def find_books_by_publish_date(book_date)
-  #   self.books.select { |b|
-  #     b.publish_date.downcase.include?( book_date.downcase )
-  #   }.uniq
-  # end
-
-  # def find_books_by_page_count(book_pages)
-  #   self.books.select { |b|
-  #     b.page_count == book_pages
-  #   }.uniq
-  # end
-
-  # def find_books_by_price(book_price)
-  #   self.books.select { |b|
-  #     b.price == book_price
-  #   }.uniq
-  # end
-
-  # def find_books_by_genre(book_genre)
-  #   self.books.select { |b|
-  #     b.genres.downcase.include?(book_genre.downcase)
-  #   }.uniq
-  # end
-
-  # def find_books_by_keyword(book_keyword)
-  #   self.books.select { |b|
-  #     b.description.downcase.include?( book_keyword.downcase )
-  #   }.uniq
-  # end
-
   ### END: BASIC REQUESTS
 
   ### These Methods Need Hashes of:
@@ -404,8 +373,54 @@ class UserInterface
     # nothing
   end
 
-  def missing_method_2
-    # nothing
+  def books_by_page_count
+    puts "\n"
+    puts "What size of book are you looking for?"
+    puts "\n"
+    long_books = []
+    mid_range = []
+    short_books = []
+    Book.all.each do |book|
+      if book.page_count < 50
+        short_books << book
+      elsif book.page_count > 50 && book.page_count < 200
+        mid_range << book
+      elsif book.page_count >= 200
+        long_books << book
+      end
+    end
+      puts "1: Just a bus read. (Under 50 pages)"
+      puts "2: Give me a weekender. (Between 50 and 200 pages)"
+      puts "3: Vacation length! (Over 200 pages)"
+      puts "\n"
+    input = gets.chomp
+    puts "\n"
+    if input.to_i == 1
+      puts "Here are some options:"
+      short_books = short_books.sample(10)
+      short_books.each_with_index do |book, index|
+        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
+      end
+    elsif input.to_i == 2
+      puts "Here are some options:"
+      mid_range = mid_range.sample(10)
+      mid_range.each_with_index do |book, index|
+        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
+      end
+    elsif input.to_i == 3
+      puts "Here are some options:"
+      long_books = long_books.sample(10)
+      long_books.each_with_index do |book, index|
+        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
+      end
+    else
+      puts "That wasn't an option..."
+      puts "\e[0m(Press ENTER to return to the menu)"
+    any_key = gets.chomp
+    self.current_menu = 0
+    return show_menu
+    end
+
   end
 
   def find_books_by_genre(str)
@@ -422,6 +437,7 @@ class UserInterface
     if ans.empty? 
       pick = ["biography", "cat", "dog", "sports", "humor"]
       return_data[:header] = "Sorry, nothing for that. Perhaps try #{pick.sample}?"
+      return_data[:header]
     else
       return_data[:header] = "Here are the books in your genre selection: "
       ans.each do |book|
