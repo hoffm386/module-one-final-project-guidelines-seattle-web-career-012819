@@ -3,7 +3,7 @@ Congratulations, you're at the end of module one! You've worked crazy hard to ge
 
 For your final project, we'll be building a Command Line database application.
 
-Project Requirements
+Project Requirements 
 Option One - Data Analytics Project
 Access a Sqlite3 Database using ActiveRecord.
 You should have at minimum three models including one join model. This means you must have a many-to-many relationship.
@@ -28,7 +28,7 @@ As a user, I want to be able to save to and retrieve a list of favorite restaura
 Instructions
 Fork and clone this repository.
 Build your application. Make sure to commit early and commit often. Commit messages should be meaningful (clearly describe what you're doing in the commit) and accurate (there should be nothing in the commit that doesn't match the description in the commit message). Good rule of thumb is to commit every 3-7 mins of actual coding time. Most of your commits should have under 15 lines of code and a 2 line commit is perfectly acceptable.
-Make sure to create a good README.md with a short description, install instructions, a contributors guide and a link to the license for your code.
+Make sure to create a good README.md with a short description, install instructions, a contributors guide and a link to the license for your code..
 Make sure your project checks off each of the above requirements.
 Prepare a video demo (narration helps!) describing how a user would interact with your working project.
 The video should:

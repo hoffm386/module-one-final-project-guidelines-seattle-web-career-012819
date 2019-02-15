@@ -6,7 +6,9 @@
 # Project Description
 The Library Trivia Guessing Game is a data analytics project that explores facts from the Seattle Public Library's checkout data. Learn facts about books, authors, publishers and the types of media checked out in Seattle.
 
-This game is a collaborative project by Yong Liang and Ellen Hatleberg. It's purpose is to utilize concepts learned during Module 1 of Flatiron School's Coding Bootcamp. For this data analytics project, ActiveRecord was used to access a Sqlite3 Database. The database was seeded using data collected from the Checkouts by Title API of the Seattle Public Library data available from https://data.seattle.gov. The project includes three models: Author, Publisher and Book. The Book is the join model. A publisher has many authors through books and vice versa. A command line interface (CLI) is provided for users to play the game, input their answers to questions and see question solutions.
+This game is a collaborative project by Yong Liang and Ellen Hatleberg. It's purpose is to utilize concepts learned during Module 1 of Flatiron School's Coding Bootcamp. For this data analytics project, ActiveRecord was used to access a Sqlite3 Database. The database was seeded using data collected from the Checkouts by Title API of the Seattle Public Library data available from https://data.seattle.gov.
+
+The project includes three models: Author, Publisher and Book. The Book is the join model. A publisher has many authors through books and vice versa. A command line interface (CLI) is provided for users to play the game, input their answers to questions and see question solutions.
 
 Data Used: https://data.seattle.gov/resource/tmmm-ytt6.json
 Dataset Description: https://data.seattle.gov/Community/Checkouts-by-Title/tmmm-ytt6
