@@ -8,10 +8,10 @@ CLI = Command_line_interface.new
 
 #CLI.question_01
 #CLI.test
-CLI.books_by_publisher
 
-#CLI.books_by_publisher
+CLI.books_by_publisher
 CLI.books_by_author
+CLI.author_of_book
 
 # binding.pry
 # 0
