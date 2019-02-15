@@ -9,9 +9,11 @@ CLI = Command_line_interface.new
 #CLI.question_01
 #CLI.test
 
-CLI.books_by_publisher
-CLI.books_by_author
-CLI.author_of_book
+CLI.author_most_book #call the first question method
+CLI.books_by_author #call the second question method
+CLI.books_by_publisher #third
+CLI.author_of_book #fourth
+CLI.usage_class_percentage #fifth
 
 # binding.pry
 # 0
