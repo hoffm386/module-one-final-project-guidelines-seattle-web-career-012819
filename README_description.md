@@ -1,7 +1,7 @@
 # LIBRARY GUESSING GAME
 
 # Watch an Overview Video About the Game
-      https://youtu.be/tMvm1H2QGuI
+  Link: https://youtu.be/tMvm1H2QGuI
 
 # Project Description
 The Library Trivia Guessing Game is a data analytics project that explores facts from the Seattle Public Library's checkout data. Learn facts about books, authors, publishers and the types of media checked out in Seattle.
