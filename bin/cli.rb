@@ -1,17 +1,17 @@
 class CLI
-puts <<-EOF
-
- $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\
-$$  __$$\\ \\_$$  _|\\__$$  __|      $$  __$$\\          \\__|      $$ |
-$$ /  \\__|  $$ |     $$ |         $$ |  $$ |$$$$$$\\  $$\\  $$$$$$$ |
-$$ |$$$$\\   $$ |     $$ |         $$$$$$$  |\\____$$\\ $$ |$$  __$$ |
-$$ |\\_$$ |  $$ |     $$ |         $$  ____/ $$$$$$$ |$$ |$$ /  $$ |
-$$ |  $$ |  $$ |     $$ |         $$ |     $$  __$$ |$$ |$$ |  $$ |
-\\$$$$$$  |$$$$$$\\    $$ |         $$ |     \\$$$$$$$ |$$ |\\$$$$$$$ |
- \\______/ \\______|   \\__|         \\__|      \\_______|\\__| \\_______|
-EOF
 
   def welcome
+    puts <<-EOF
+
+     $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\
+    $$  __$$\\ \\_$$  _|\\__$$  __|      $$  __$$\\          \\__|      $$ |
+    $$ /  \\__|  $$ |     $$ |         $$ |  $$ |$$$$$$\\  $$\\  $$$$$$$ |
+    $$ |$$$$\\   $$ |     $$ |         $$$$$$$  |\\____$$\\ $$ |$$  __$$ |
+    $$ |\\_$$ |  $$ |     $$ |         $$  ____/ $$$$$$$ |$$ |$$ /  $$ |
+    $$ |  $$ |  $$ |     $$ |         $$ |     $$  __$$ |$$ |$$ |  $$ |
+    \\$$$$$$  |$$$$$$\\    $$ |         $$ |     \\$$$$$$$ |$$ |\\$$$$$$$ |
+     \\______/ \\______|   \\__|         \\__|      \\_______|\\__| \\_______|
+    EOF
     puts
     puts "Welcome to GIT Paid, the Dev job search tool you've been waiting for.".colorize(:color => :blue, :background => :white)
     puts
@@ -85,7 +85,7 @@ EOF
       update_location
     elsif main_menu_response == "5"
       @@user_id = nil
-      puts "Signing out"
+      puts "Signing out".colorize(:color => :light_blue, :background => :white)
       sleep(1)
       welcome
     elsif main_menu_response == "6"
@@ -394,9 +394,10 @@ EOF
       else
         puts "No url provided."
       end
-      puts "Opening link to application".colorize(:green)
+      puts "Opening link to application".colorize(:color => :light_blue, :background => :white)
       sleep(1)
       system('open', url)
+      system('clear')
       main_menu
     else
       invalid_response
