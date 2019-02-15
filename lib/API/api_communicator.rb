@@ -43,8 +43,11 @@ class API_Hash
       book_hash["title"] = api["title"]
       book_hash["creator_name"] = api["creator"]
       book_hash["publisher_name"] = api["publisher"]
+      book_hash["usage_class"] = api["usageclass"]
       book_title_array << book_hash
     end
     book_title_array
   end
+
+  
 end #end of class
