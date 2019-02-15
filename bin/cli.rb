@@ -356,7 +356,7 @@ EOF
       if user_delete_input > 0 && user_delete_input <= @@jobs.count
         job_to_delete = @@jobs[user_delete_input - 1]
         job_to_delete.destroy
-        puts "Job successfully deleted. Here are your saved jobs: ".colorize(:light_blue)
+        puts "Job successfully deleted.".colorize(:light_blue)
         main_menu
       else
         invalid_response
@@ -529,10 +529,4 @@ EOF
     puts
     @@jobs = saved_postings.each_with_index.map {|posting| posting}
   end
-
-  # def sanitize(string)
-  #   initial_string = Sanitize.clean(string)
-  #   new_string = string.delete!("\n")
-  # end
-
 end #end of cli class
