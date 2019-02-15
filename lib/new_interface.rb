@@ -373,6 +373,14 @@ class UserInterface
     # nothing
   end
 
+  def length_abst(array)
+    puts "Here are some options:"
+    array = array.sample(10)
+    array.each_with_index do |book, index|
+      puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
+    end
+  end
+
   def books_by_page_count
     puts "\n"
     puts "What size of book are you looking for?"
@@ -396,31 +404,18 @@ class UserInterface
     input = gets.chomp
     puts "\n"
     if input.to_i == 1
-      puts "Here are some options:"
-      short_books = short_books.sample(10)
-      short_books.each_with_index do |book, index|
-        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
-      end
+      length_abst(short_books)
     elsif input.to_i == 2
-      puts "Here are some options:"
-      mid_range = mid_range.sample(10)
-      mid_range.each_with_index do |book, index|
-        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
-      end
+      length_abst(mid_range)
     elsif input.to_i == 3
-      puts "Here are some options:"
-      long_books = long_books.sample(10)
-      long_books.each_with_index do |book, index|
-        puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
-      end
+      length_abst(long_books)
     else
       puts "That wasn't an option..."
-      puts "\e[0m(Press ENTER to return to the menu)"
+    end
+    puts "\e[0m(Press ENTER to return to the menu)"
     any_key = gets.chomp
     self.current_menu = 0
     return show_menu
-    end
-
   end
 
   def find_books_by_genre(str)
