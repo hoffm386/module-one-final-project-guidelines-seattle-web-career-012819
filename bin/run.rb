@@ -1,8 +1,8 @@
 require_relative '../config/environment'
 
-system "rake db:drop"
-system "rake db:migrate"
-system "rake db:seed"
+# system "rake db:drop"
+# system "rake db:migrate"
+# system "rake db:seed"
 
 cli = UserInterface.new(Author.all, Book.all, Publisher.all)
 

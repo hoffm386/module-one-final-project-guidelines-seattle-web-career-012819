@@ -12,24 +12,15 @@ def create_books(array_of_volume_hashes, array_of_sale_hashes)
 
     # Parse the "amount" key's numerical value from "list_price_hash".
     # Defaults to a float value of 0.00 if there is no pricing data returned.
-    list_price_amount = get_key_value( list_price_hash, "amount", 0.00 )
-
-    # Parse the category info
-    # Default to empty array
-    get_category_info = get_key_value(volume, "categories", [])
-
-    # Parse the description info
-    # Default to empty string
-    description_text = get_key_value(volume, "description", "")
 
     # Create a hash of Book arguments
     book_arguments = {
       title:        get_key_value( volume, "title", "" ),
       publish_date: get_key_value( volume, "publishedDate", "" ),
       page_count:   get_key_value( volume, "pageCount", 0 ),
-      price:        list_price_amount,
-      genres:       get_category_info.join(" ,"),
-      description:  description_text
+      price:        get_key_value( list_price_hash, "amount", 0.00 ),
+      genres:       get_key_value( volume, "categories", [] ).join("; "),
+      description:  get_key_value( volume, "description", "" )
     }
 
     # Shovel each new Book into our return data array
