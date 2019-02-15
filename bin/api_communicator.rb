@@ -28,7 +28,7 @@ response_hash["results"].each do |pokemon|
       pokemon_move_hash = JSON.parse(pokemon_move_string)
       Move.create(name: name, accuracy: pokemon_move_hash["accuracy"], pp: pokemon_move_hash["pp"], damage: pokemon_move_hash["power"], move_type: pokemon_move_hash["type"]["name"] )
       PokemonMove.create(pokemon_id: Pokemon.last.id, move_id: Move.last.id)
-    
+
     end
     #grabbing the default 4 moves per pokemon
       Pokemon.all.last.update_attribute(:move1, Pokemon.all.last.moves.sample.id)

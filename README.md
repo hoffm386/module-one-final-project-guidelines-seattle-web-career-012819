@@ -14,4 +14,8 @@ Install Instructions
 
 This program is licensed under creative commons, feel free to use it in anyway you see fit.
 
+
+Video guide for running our program
+https://youtu.be/lYTNf__Tw9E
+
 Thank you
