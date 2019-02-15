@@ -7,6 +7,7 @@ CLI = Command_line_interface.new
 
 
 #CLI.question_01
+#CLI.welcome
 CLI.author_most_book #call the first question method
 CLI.books_by_author #call the second question method
 CLI.books_by_publisher #third
