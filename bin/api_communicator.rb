@@ -5,7 +5,7 @@ require 'pry'
 
 def get_pokemon_from_api
 seed_games
-response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=1000')
+response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=20')
 response_hash = JSON.parse(response_string)
 
 response_hash["results"].each do |pokemon|

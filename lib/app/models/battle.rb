@@ -33,8 +33,11 @@ class Battle
   end
 
   def battle_welcome
+    puts ""
     puts "!!!"
+    puts ""
     puts @trainer.flavor_text
+    puts ""
   end
 
   def main_battle_loop
@@ -57,6 +60,7 @@ class Battle
 
   def forfeit
     puts "You blacked out and they took your money, you're like 10"
+    puts ""
     exit
   end
 
@@ -80,32 +84,56 @@ class Battle
   end
 
   def battle_fight
+    puts ""
     puts "Choose your move!"
-    puts "1. #{Move.find(@curr_poke.move1).name}"
-    puts "2. #{Move.find(@curr_poke.move2).name}"
-    puts "3. #{Move.find(@curr_poke.move3).name}"
-    puts "4. #{Move.find(@curr_poke.move4).name}"
-
-    answer = gets.chomp
-    if answer == "1"
-      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move1).damage.to_i)
-      puts "You did #{Move.find(curr_poke.move1).damage.to_i} to #{@opp_poke.name}"
-      puts "Their hp is now #{@opp_team[opp_poke]}"
-    elsif answer == "2"
-      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move2).damage.to_i)
-      puts "You did #{Move.find(curr_poke.move2).damage.to_i} to #{@opp_poke.name}"
-      puts "Their hp is now #{@opp_team[opp_poke]}"
-    elsif answer == "3"
-     @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move3).damage.to_i)
-     puts "You did #{Move.find(curr_poke.move3).damage.to_i} to #{@opp_poke.name}"
-      puts "Their hp is now #{@opp_team[opp_poke]}"
-    elsif answer == "4"
-      @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move4).damage.to_i)
-      puts "You did #{Move.find(curr_poke.move4).damage.to_i} to #{@opp_poke.name}"
-      puts "Their hp is now #{@opp_team[opp_poke]}"
-    else
-      puts "Your answer is whack yo!"
+    
+    move_array = Move.where(id: [@curr_poke.move1, @curr_poke.move2, @curr_poke.move3, @curr_poke.move4])
+    # puts "1. #{Move.find(@curr_poke.move1).name}"
+    # puts "2. #{Move.find(@curr_poke.move2).name}"
+    # puts "3. #{Move.find(@curr_poke.move3).name}"
+    # puts "4. #{Move.find(@curr_poke.move4).name}"
+    move_array.each_with_index do |m, index|
+      puts "#{index + 1}. #{m.name}"
     end
+    puts ""
+    answer = gets.chomp
+
+    if !["1","2","3","4"].include?(answer)
+      puts "Your answer is whack yo!"
+      return
+    end
+
+    move = move_array[answer.to_i - 1]
+    puts ""
+    @opp_team[@opp_poke] = (@opp_team[opp_poke] - move.damage.to_i)
+    puts "You did #{move.damage.to_i} damage to #{@opp_poke.name.capitalize}"
+    puts ""
+    puts "Their hp is now #{@opp_team[opp_poke]}"
+    
+    # if answer == "1"
+    #   @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move1).damage.to_i)
+    #   puts "You did #{Move.find(curr_poke.move1).damage.to_i} damage to #{@opp_poke.name.capitalize}"
+    #   puts ""
+    #   puts "Their hp is now #{@opp_team[opp_poke]}"
+    # elsif answer == "2"
+    #   @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move2).damage.to_i)
+    #   puts "You did #{Move.find(curr_poke.move2).damage.to_i} damage to #{@opp_poke.name.capitalize}"
+    #   puts ""
+    #   puts "Their hp is now #{@opp_team[opp_poke]}"
+    # elsif answer == "3"
+    #  @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move3).damage.to_i)
+    #  puts "You did #{Move.find(curr_poke.move3).damage.to_i} damage to #{@opp_poke.name.capitalize}"
+    #  puts ""
+    #   puts "Their hp is now #{@opp_team[opp_poke]}"
+    # elsif answer == "4"
+    #   @opp_team[@opp_poke] = (@opp_team[opp_poke] - Move.find(curr_poke.move4).damage.to_i)
+    #   puts "You did #{Move.find(curr_poke.move4).damage.to_i} damage to #{@opp_poke.name.capitalize}"
+    #   puts ""
+    #   puts "Their hp is now #{@opp_team[opp_poke]}"
+    #   puts ""
+    # else
+    #   puts "Your answer is whack yo!"
+    # end
   end
 
   def opp_attack
@@ -118,13 +146,18 @@ class Battle
     m_name = Move.find(arr.sample.id)
     dmg = m_name.damage.to_i
     @our_team[@curr_poke] = (@our_team[@curr_poke] - dmg)
+    if @our_team[@curr_poke] < 0
+      @our_team[@curr_poke] = 0
+    end
     puts "#{@trainer.name} used #{m_name.name}"
-    puts "#{@opp_poke.name} did #{dmg} to #{@curr_poke.name}"
+    puts "#{@opp_poke.name} did #{dmg} damage to #{@curr_poke.name.capitalize}"
+    puts ""
   end
 
   def opp_poke_hp_check
     if @opp_team[@opp_poke] <= 0
-      puts "#{@opp_poke.name} has fainted"
+      puts "#{@opp_poke.name.capitalize} has fainted"
+      puts ""
       return true
     else
       return false
@@ -133,7 +166,7 @@ class Battle
 
   def curr_poke_hp_check
     if @our_team[@curr_poke] <= 0
-      puts "#{@curr_poke.name} has fainted"
+      puts "#{@curr_poke.name.capitalize} has fainted"
       return true
     else
       return false
@@ -146,32 +179,50 @@ class Battle
       @opp_team[p] > 0
     end
     @opp_poke = arr.keys.sample
-    puts "#{@trainer.name} sent out #{@opp_poke.name}"
+    puts "#{@trainer.name} sent out #{@opp_poke.name.capitalize}"
   end
 
   def curr_change_poke
     puts "Please pick a pokemon to send out"
+    puts "---------------------------------"
     @our_team.each do |k,v|
       puts "#{k.name} -> HP: #{v}"
     end
-    puts "please type in their name"
+    puts ""
+    puts "Please type in their name"
+    puts ""
     answer = gets.chomp
 
-    arr = @our_team.keys.collect do |x|
-      x.name.downcase
+    result = @our_team.find do |k, v|
+      k.name.downcase == answer.downcase && v > 0
     end
-
-    if arr.include?(answer.downcase) == false
+    
+    if result.nil?
+      puts ""
       puts "Please type a valid name"
       curr_change_poke
-    else
-      if @our_team[Pokemon.find_by(name: answer.downcase)] > 0
-        @curr_poke = Pokemon.find_by(name: answer.downcase)
-      else
-        puts "This pokemon dead"
-        curr_change_poke
-      end
+    else 
+      @curr_poke = result.first
     end
+
+    
+
+    # arr = @our_team.keys.collect do |x|
+    #   x.name.downcase
+    # end
+
+    # if arr.include?(answer.downcase) == false
+    #   puts ""
+    #   puts "Please type a valid name"
+    #   curr_change_poke
+    # else
+    #   if @our_team[Pokemon.find_by(name: answer.downcase)] > 0
+    #     @curr_poke = Pokemon.find_by(name: answer.downcase)
+    #   else
+    #     puts "This pokemon dead"
+    #     curr_change_poke
+    #   end
+    # end
   end
 
   def win_or_loose
@@ -179,7 +230,7 @@ class Battle
       puts "You Won!!!!"
       cli.run
     elsif loose_condition == true
-      puts "You loose!!!!"
+      puts "You lose!!!!"
       cli.run
     end
   end

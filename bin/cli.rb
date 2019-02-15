@@ -8,10 +8,10 @@ class CLI
     end
 
     def run
-    puts "Seeding Databases"
-    get_pokemon_from_api()
-    seed_trainers
-    puts "Seeding Complete"
+    # puts "Seeding Databases..."
+    # #get_pokemon_from_api()
+    # seed_trainers
+    # puts "Seeding Complete"
     welcome
     choice = options
         while choice != 4
