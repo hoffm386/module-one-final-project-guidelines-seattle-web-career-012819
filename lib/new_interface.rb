@@ -3,38 +3,31 @@ class UserInterface
   attr_accessor :current_menu, :expect_search_term
 
   def initialize(authors, books, publishers)
-      @authors = authors
-      @books = books
-      @publishers = publishers
-      @current_menu = 0
-      @expect_search_term = false
+    @@counter = 0
+
+    @authors = authors
+    @books = books
+    @publishers = publishers
+
+    @current_menu = 0
+    @expect_search_term = false
   end
 
-  def get_user_input
-    # Format the input as a string and downcase it
-
-    user_input = gets.chomp.to_s.downcase
-
-    ### Assign a value to @current_menu
-
-    # If the user is entering /a, /b, /exit
-    if user_input.include?("/a")
-      # reload the current menu (don't change self.current_menu)
-    elsif user_input.include?("/b")
-      # go to the main menu
-      self.current_menu = 0
-    elsif user_input.include?("/exit")
-      # exit the program
-      self.current_menu = (-1)
-    elsif user_input.to_i > 0
-      # Set the current_menu to the one the user chose.
-      self.current_menu = user_input.to_i
-      # Expect a search term.
-      self.expect_search_term = true
-    end
-
-    ### Show the appropriate menu and pass the input from the user.
-    return show_menu(user_input)
+  def get_data_from_menu_command
+    methods_array = [
+      method(:find_books_by_title),
+      method(:find_books_by_author),
+      method(:find_books_by_publisher),
+      method(:find_books_by_genre),
+      method(:find_books_by_price),
+      method(:grab_bag),
+      method(:find_cheapest_book),
+      method(:missing_method_1),
+      method(:missing_method_2),
+      method(:bibs_n_beans),
+      method(:exit_program)
+    ]
+    methods_array[self.current_menu-1]
   end
 
   def menu_text
@@ -50,13 +43,17 @@ class UserInterface
         # spacer will be printed inside of the menu
 
         body: [
-          "Find a book by its title",
-          "Find all books by an author",
-          "Find all books by publisher",
-          "Find books by genre",
-          "Play BookRoulette",
-          "Bib & Beans' recommendations",
-        ],
+          "Find All Books by Title",
+          "Find All Books by Author",
+          "Find All Books by Publisher",
+          "Find All Books by Genre",
+          "Find All Books by a Given Price",
+          "Request a Grab Bag of Books to Discover",
+          "Find the Cheapest Book",
+          "Missing 1 (?)",
+          "Missing 2 (?)",
+          "Bibs' & Beans' Recommendations"
+        ]
         # spacer will be printed inside of the menu
 
         # every menu gets this appended at the bottom by default:
@@ -86,6 +83,48 @@ class UserInterface
         header: "Please enter a publisher to find:",
         body: []
       },
+
+      {
+        title: "Book Search by Genre",
+        header: "Please enter a genre to find:",
+        body: []
+      },
+
+      {
+        title: "Book Search by Price",
+        header: "Please enter a price to find:",
+        body: []
+      },
+
+      {
+        title: "Grab Bag of Books to Discover",
+        header: "We thought you might enjoy giving these a read:",
+        body: []
+      },
+
+      {
+        title: "Cheapest Book",
+        header: "The book with the lowest price is:",
+        body: []
+      },
+
+      {
+        title: "Missing 1 (?)",
+        header: "Something:",
+        body: []
+      },
+
+      {
+        title: "Missing 2 (?)",
+        header: "Something:",
+        body: []
+      },
+
+      {
+        title: "Bibs' & Beans' Recommendations",
+        header: "The books that are trending among dogs and cats are:",
+        body: []
+      }
     ]
 
     # If something isn't found, smaple from these phrases
@@ -181,25 +220,72 @@ class UserInterface
     end
   end
 
-  def get_data_from_menu_command
-    methods_array = [
-      method(:find_books_by_title),
-      method(:find_books_by_author),
-      method(:find_books_by_publisher),
-      method(:find_books_by_publish_date),
-      method(:find_books_by_page_count),
-      method(:find_books_by_price),
-      method(:find_books_by_genre),
-      method(:find_books_by_keyword)
-    ]
-    methods_array[self.current_menu-1]
+  def get_user_input
+    # Format the input as a string and downcase it
+
+    user_input = gets.chomp.to_s.downcase
+
+    ### Assign a value to @current_menu
+
+    # If the user is entering /a, /b, /exit
+    if user_input.include?("/a")
+      # reload the current menu (don't change self.current_menu)
+    elsif user_input.include?("/b")
+      # go to the main menu
+      self.current_menu = 0
+    elsif user_input.include?("/exit")
+      # exit the program
+      self.current_menu = (-1)
+    elsif user_input.to_i > 0
+      # Set the current_menu to the one the user chose.
+      self.current_menu = user_input.to_i
+      # Expect a search term.
+      self.expect_search_term = true
+    end
+
+    ### Show the appropriate menu and pass the input from the user.
+    return show_menu(user_input)
+  end
+
+  def grab_bag
+    puts "\n"
+    puts "Pick your poison:"
+    puts "\n"
+
+    arr = Book.all.sample(3)
+
+    result = arr.map do |book|
+      arr2 = book.description.split(/ /)
+      new_str = arr2[1..9].join(" ")
+      new_str << "..."
+      new_str.prepend("...")
+    end
+
+    result.each_with_index do |str, index|
+      puts "#{index+1}#{str}"
+    end
+
+    input = gets.chomp
+    puts "\n"
+    puts "You've chosen #{arr[input.to_i - 1].title}, by #{arr[input.to_i - 1].authors[0].name}. Happy reading!"
+    puts "\n"
+    sleep(1.second)
   end
 
   ### BEGIN: BASIC REQUESTS (Merged as a failsafe)
 
   def find_books_by_title(book_title)
+
+    return_data = {
+      title: "Matching Book Titles",
+      header: "The following books matcher your search:",
+      body: []
+    }
+
     self.books.select { |b|
       b.title.downcase.include?( book_title.downcase )
+    }.each { |e|
+      return_data[:body] << "#{e.title} by #{e.authors.join(" & ")}"
     }
   end
 
@@ -237,11 +323,11 @@ class UserInterface
     }.uniq
   end
 
-  def find_books_by_genre(book_genre)
-    self.books.select { |b|
-      b.genres.downcase.include?(book_genre.downcase)
-    }.uniq
-  end
+  # def find_books_by_genre(book_genre)
+  #   self.books.select { |b|
+  #     b.genres.downcase.include?(book_genre.downcase)
+  #   }.uniq
+  # end
 
   def find_books_by_keyword(book_keyword)
     self.books.select { |b|
@@ -251,17 +337,111 @@ class UserInterface
 
   ### END: BASIC REQUESTS
 
-  def book_roulette
-      arr = Book.all.sample(3)
-      result = arr.map do |book|
-          arr2 = book.description.split(/ /)
-          new_str = arr2[1..9].join(" ")
-          new_str << "..."
-          new_str.prepend("...")
+  ### These Methods Need Hashes of:
+  ### :title, :header, and :body (an array of strings) added.
+
+  def missing_method_1
+    # nothing
+  end
+
+  def missing_method_2
+    # nothing
+  end
+
+  def find_books_by_genre(str)
+    ans = Book.all.select do |book|
+      book.genres.downcase.include?(str.downcase) ||
+      book.title.downcase.include?(str.downcase)
+    end
+    puts "\n"
+    if ans.empty? 
+      pick = ["biography", "cat", "dog", "sports", "humor"]
+      puts "Sorry, nothing for that. Perhaps try #{pick.sample}?"
+    else
+    puts "Here are the books in your genre selection: "
+    ans.each do |book|
+      puts "#{book.title}, by #{book.authors[0].name}."
+    end
+  end
+
+  def book_price(str)
+    arr = []
+    Book.all.each do |book|
+      if book.title.downcase == str.to_s.downcase
+          arr << book.price
       end
-      result.each_with_index do |str, index|
-          puts "#{index+1}#{str}"
+    end
+    if arr[0] > 0
+      arr2 = ["Worth it.", "Why not?", "Let's do this!", "It WOULD look good on your bookshelf...", "Can't put a price on a good read, though."]
+      puts "\n"
+      puts "That one is $#{arr[0]}. #{arr2.sample}"
+    else 
+      puts "That one isn't for sale right now. We do NOT recommending finding a link to illegaly download it instead."
+    end
+  end
+
+  def find_cheapest_book
+    puts "Calculating prices.."
+    2.times do 
+      sleep(1) 
+      puts"."
+    end
+    cheapest = nil
+    Book.all.each do |book|
+      if cheapest == nil
+          cheapest = book
+      elsif book.price > 0 && book.price < cheapest.price
+          cheapest = book
       end
+    end
+    puts "The cheapest book is #{cheapest.title} by #{cheapest.authors[0].name}, at $#{cheapest.price}. That's basically free!"
+    puts "\n"
+  end
+
+  def bib_n_bean
+      if @@counter == 0
+          puts "\n"
+          puts "..."
+          sleep(1.second) 
+          puts "We can't read."
+          puts "\n"
+          sleep(1.second) 
+          @@counter += 1
+      elsif 
+          @@counter == 1
+          puts "Alright, fine. Bib likes #{random_cat_book}!"
+          puts "\n"
+          sleep(1.second) 
+          @@counter += 1
+      elsif
+          @@counter == 2
+          puts "Beans says you should read #{random_dog_book}!"
+          puts "\n"
+          sleep(1.second) 
+          @@counter = 0
+      end
+  end
+
+  def random_cat_book
+      arr =[]
+      Book.all.each do |book|
+          if book.genres.downcase.include?("cat") || book.title.downcase.include?("cat")
+              arr << book
+          end
+      end
+      boo = arr.sample
+      "#{boo.title}, by #{boo.authors[0].name}"
+  end
+
+  def random_dog_book
+      arr =[]
+      Book.all.each do |book|
+          if book.genres.downcase.include?("dog") || book.title.downcase.include?("dog")
+              arr << book
+          end
+      end
+      boo = arr.sample
+      "#{boo.title}, by #{boo.authors[0].name}"
   end
 
   def exit_program
