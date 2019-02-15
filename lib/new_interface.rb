@@ -174,10 +174,9 @@ class UserInterface
             method_to_call = get_data_from_menu_command
             # Store the result of the query
             if method_to_call
-              results_body = method_to_call.call(user_input)
-
+              results_hash = method_to_call.call(user_input)
               # Update the menu with the result
-              text_hash[:body] = results_body
+              text_hash = results_hash
 
             end
           end
@@ -278,23 +277,40 @@ class UserInterface
 
     return_data = {
       title: "Matching Book Titles",
-      header: "The following books matcher your search:",
+      header: "The following books matched your search:",
       body: []
     }
 
     self.books.select { |b|
       b.title.downcase.include?( book_title.downcase )
     }.each { |e|
-      return_data[:body] << "#{e.title} by #{e.authors.join(" & ")}"
+      t_str = e.title
+      a_str = e.authors.map { |a|
+        a.name
+      }
+
+      a_str.flatten.uniq.join(" & ")
+      if a_str.class == Array
+        a_str = a_str[0]
+      end
+
+      return_data[:body] << "#{t_str} by #{a_str}"
     }
+    return_data
   end
 
   def find_books_by_author(author_name)
+    return_data = {
+      title: "Matching Books by Author",
+      header: "The following books matched your search:",
+      body: []
+    }
     self.authors.select { |a|
       a.name.downcase.include?( author_name.downcase )
     }.map { |m|
       m.books
     }.flatten.uniq
+    return_data
   end
 
   def find_books_by_publisher(publisher_name)
@@ -358,13 +374,14 @@ class UserInterface
       pick = ["biography", "cat", "dog", "sports", "humor"]
       puts "Sorry, nothing for that. Perhaps try #{pick.sample}?"
     else
-    puts "Here are the books in your genre selection: "
-    ans.each do |book|
-      puts "#{book.title}, by #{book.authors[0].name}."
+      puts "Here are the books in your genre selection: "
+      ans.each do |book|
+        puts "#{book.title}, by #{book.authors[0].name}."
+      end
     end
   end
 
-  def book_price(str)
+  def find_book_by_price(str)
     arr = []
     Book.all.each do |book|
       if book.title.downcase == str.to_s.downcase
@@ -398,7 +415,7 @@ class UserInterface
     puts "\n"
   end
 
-  def bib_n_bean
+  def bibs_n_beans
       if @@counter == 0
           puts "\n"
           puts "..."
