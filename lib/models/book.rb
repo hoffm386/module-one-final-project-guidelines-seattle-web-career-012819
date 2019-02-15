@@ -1,4 +1,5 @@
 class Book < ActiveRecord::Base
-  belongs_to :author
-  belongs_to :publisher
+  has_many :book_deals
+  has_many :authors, through: :book_deals
+  has_many :publishers, through: :book_deals
 end
