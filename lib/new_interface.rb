@@ -47,7 +47,7 @@ class UserInterface
           "Find All Books by Author",
           "Find All Books by Publisher",
           "Find All Books by Genre",
-          "Find All Books by a Given Price",
+          "Find the Price of a Given Book",
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
           "Missing 1 (?)",
@@ -68,31 +68,31 @@ class UserInterface
 
       {
         title: "Book Search by Title",
-        header: "Please enter a title to find:",
+        header: "Please enter a title keyword to query:",
         body: []
       },
 
       {
         title: "Book Search by Author",
-        header: "Please enter a author to find:",
+        header: "Please enter the author keyword you would like to look up:",
         body: []
       },
 
       {
         title: "Book Search by Publisher",
-        header: "Please enter a publisher to find:",
+        header: "Please enter the publisher keyword you want to browse:",
         body: []
       },
 
       {
         title: "Book Search by Genre",
-        header: "Please enter a genre to find:",
+        header: "Please enter a genre keyword you want to read more of:",
         body: []
       },
 
       {
-        title: "Book Search by Price",
-        header: "Please enter a price to find:",
+        title: "Search Price by Book",
+        header: "Please enter a book title keyword whose price you want to find:",
         body: []
       },
 
@@ -153,11 +153,18 @@ class UserInterface
   end
 
   def show_menu(user_input=nil)
+    divert_to_fancy_method = false
     if ( self.current_menu == (-1) )
       # we exit the program
       return exit_program
-
     else
+      if ( self.current_menu == 6 || self.current_menu == 7 || self.current_menu == 10 )
+        divert_to_fancy_method = true
+      end
+
+      # Clear the terminal
+      system("clear")
+
       # Grab all the text for this menu
       text_hash = menu_text
 
@@ -169,27 +176,41 @@ class UserInterface
       # And we have received user_input...
       if self.current_menu != 0
         if self.expect_search_term
-          if user_input
+          if divert_to_fancy_method
+            return get_data_from_menu_command.call
+          end
+
+          if !(user_input =~ /\A[-+]?[0-9]+\z/)
             # Point to the method we want to run
             method_to_call = get_data_from_menu_command
             # Store the result of the query
             if method_to_call
               results_hash = method_to_call.call(user_input)
-              # Update the menu with the result
-              text_hash = results_hash
 
+              # Update the menu with the result, conditionally, if anything has changed.
+              if results_hash[:body].length == 0 && self.current_menu != 5
+                text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
+              else
+                text_hash[:title]   = results_hash[:title]
+                text_hash[:header]  = results_hash[:header]
+                text_hash[:body]    = results_hash[:body]
+              end
             end
           end
         end
+      else
+        if user_input && !(user_input =~ /\A[-+]?[0-9]+\z/)
+          text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
+        end
       end
 
-      system("clear") # Clear the terminal
 
       # Display the title of this location in the program.
-      puts "#{text_hash[:title]}#{new_line}"
+      puts "\x1b[48;5;24m\x1b[38;5;255m*   #{text_hash[:title]}   *#{new_line}\e[0m"
 
       # Display the header of this location in the program.
-      puts "#{text_hash[:header]}#{new_line}"
+      # This uses fancy syntax to colorize the command line.
+      puts "\e[33m#{text_hash[:header]}\e[0m#{new_line}"
 
       # Display the body if there is one.
       text_hash[:body].each_with_index do |b, index|
@@ -203,41 +224,47 @@ class UserInterface
       footer_msg = [
         "You may also type:#{new_line}",
         "\/b to go back to the menu\n",
-        "\/a to make another request in this menu\n",
-        "\/exit to leave the program.#{new_line}"
+        "\/exit to leave the program\n",
+        "another keyword to search.#{new_line}"
       ]
 
       footer_msg.each_with_index do |f, index|
         if index==0
-          puts "#{f}"
+          puts "\x1b[38;5;248m#{f}"
         else
-          puts "*\t#{f}"
+          if self.current_menu == 0
+            if index == 0 || index == 2
+              puts "*\t#{f}"
+            end
+          else
+            puts "*\t#{f}"
+          end
         end
       end
-
+      print "\e[0m"
       return get_user_input
     end
   end
 
   def get_user_input
-    # Format the input as a string and downcase it
+    # Format the input as a downcased string
 
-    user_input = gets.chomp.to_s.downcase
+    user_input = gets.chomp.downcase
 
     ### Assign a value to @current_menu
 
-    # If the user is entering /a, /b, /exit
-    if user_input.include?("/a")
-      # reload the current menu (don't change self.current_menu)
-    elsif user_input.include?("/b")
+    # If the user is entering /b, /exit
+    if user_input.include?("/b")
       # go to the main menu
       self.current_menu = 0
+      self.expect_search_term = false
     elsif user_input.include?("/exit")
       # exit the program
       self.current_menu = (-1)
     elsif user_input.to_i > 0
       # Set the current_menu to the one the user chose.
       self.current_menu = user_input.to_i
+
       # Expect a search term.
       self.expect_search_term = true
     end
@@ -269,15 +296,20 @@ class UserInterface
     puts "You've chosen #{arr[input.to_i - 1].title}, by #{arr[input.to_i - 1].authors[0].name}. Happy reading!"
     puts "\n"
     sleep(1.second)
+
+    puts "(Press any key to return to the menu)"
+    any_key = gets.chomp
+    self.current_menu = 0
+    return show_menu
+
   end
 
   ### BEGIN: BASIC REQUESTS (Merged as a failsafe)
 
   def find_books_by_title(book_title)
-
     return_data = {
       title: "Matching Book Titles",
-      header: "The following books matched your search:",
+      header: "The following titles matched your keyword:",
       body: []
     }
 
@@ -299,45 +331,57 @@ class UserInterface
     return_data
   end
 
-  def find_books_by_author(author_name)
+  def find_books_by_author(str)
     return_data = {
       title: "Matching Books by Author",
-      header: "The following books matched your search:",
+      header: "This author has written or collaborated on:",
       body: []
     }
-    self.authors.select { |a|
-      a.name.downcase.include?( author_name.downcase )
-    }.map { |m|
-      m.books
-    }.flatten.uniq
+
+    ans = Book.all.select do |book|
+      book.authors[0].name.downcase.include?(str.downcase)
+    end
+
+    ans.each do |book|
+      return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
+    end
     return_data
   end
 
-  def find_books_by_publisher(publisher_name)
-    self.publishers.select { |p|
-      p.name.downcase.include?( publisher_name.downcase )
-    }.map { |m|
-      m.books
-    }.flatten.uniq
+  def find_books_by_publisher(str)
+    return_data = {
+      title: "Matching Books by Publisher",
+      header: "This publisher has released:",
+      body: []
+    }
+
+    ans = Book.all.select do |book|
+      book.publishers[0].name.downcase.include?(str.downcase)
+    end
+
+    ans.each do |book|
+      return_data << "#{book.title}, by #{book.authors[0].name}."
+    end
+    return_data
   end
 
-  def find_books_by_publish_date(book_date)
-    self.books.select { |b|
-      b.publish_date.downcase.include?( book_date.downcase )
-    }.uniq
-  end
+  # def find_books_by_publish_date(book_date)
+  #   self.books.select { |b|
+  #     b.publish_date.downcase.include?( book_date.downcase )
+  #   }.uniq
+  # end
 
-  def find_books_by_page_count(book_pages)
-    self.books.select { |b|
-      b.page_count == book_pages
-    }.uniq
-  end
+  # def find_books_by_page_count(book_pages)
+  #   self.books.select { |b|
+  #     b.page_count == book_pages
+  #   }.uniq
+  # end
 
-  def find_books_by_price(book_price)
-    self.books.select { |b|
-      b.price == book_price
-    }.uniq
-  end
+  # def find_books_by_price(book_price)
+  #   self.books.select { |b|
+  #     b.price == book_price
+  #   }.uniq
+  # end
 
   # def find_books_by_genre(book_genre)
   #   self.books.select { |b|
@@ -345,11 +389,11 @@ class UserInterface
   #   }.uniq
   # end
 
-  def find_books_by_keyword(book_keyword)
-    self.books.select { |b|
-      b.description.downcase.include?( book_keyword.downcase )
-    }.uniq
-  end
+  # def find_books_by_keyword(book_keyword)
+  #   self.books.select { |b|
+  #     b.description.downcase.include?( book_keyword.downcase )
+  #   }.uniq
+  # end
 
   ### END: BASIC REQUESTS
 
@@ -365,44 +409,64 @@ class UserInterface
   end
 
   def find_books_by_genre(str)
+    return_data = {
+      title: "Book Search by Genre",
+      header: "",
+      body: []
+    }
     ans = Book.all.select do |book|
       book.genres.downcase.include?(str.downcase) ||
       book.title.downcase.include?(str.downcase)
     end
-    puts "\n"
+
     if ans.empty? 
       pick = ["biography", "cat", "dog", "sports", "humor"]
-      puts "Sorry, nothing for that. Perhaps try #{pick.sample}?"
+      return_data[:header] = "Sorry, nothing for that. Perhaps try #{pick.sample}?"
     else
-      puts "Here are the books in your genre selection: "
+      return_data[:header] = "Here are the books in your genre selection: "
       ans.each do |book|
-        puts "#{book.title}, by #{book.authors[0].name}."
+        return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
       end
     end
+    return_data
   end
 
-  def find_book_by_price(str)
+  def find_books_by_price(str)
+    return_data = {
+      title: "Pricing Data for a Given Book",
+      header: "",
+      body: []
+    }
+
     arr = []
     Book.all.each do |book|
-      if book.title.downcase == str.to_s.downcase
+      if book.title.downcase.include?(str.downcase)
           arr << book.price
       end
     end
-    if arr[0] > 0
+
+    if arr.length > 0
       arr2 = ["Worth it.", "Why not?", "Let's do this!", "It WOULD look good on your bookshelf...", "Can't put a price on a good read, though."]
-      puts "\n"
-      puts "That one is $#{arr[0]}. #{arr2.sample}"
+      
+      return_data[:header] = "That book is $#{arr[0]}. #{arr2.sample}"
     else 
-      puts "That one isn't for sale right now. We do NOT recommending finding a link to illegaly download it instead."
+      return_data[:header] = ["\x1b[38;5;196mThe book you are looking for isn't for sale right now.", "We do NOT recommend finding a link to illegaly download it instead."].join("\n\n")
     end
+    return_data
   end
 
   def find_cheapest_book
-    puts "Calculating prices.."
-    2.times do 
+    puts "\x1b[48;5;24m\x1b[38;5;255m*   Thrifty Reading   *\e[0m\n\n"
+    print "Calculating prices"
+    3.times do 
       sleep(1) 
-      puts"."
+      print "."
     end
+
+    system("clear")
+
+    puts "\x1b[48;5;24m\x1b[38;5;255m*   Thrifty Reading   *\e[0m\n\n"
+
     cheapest = nil
     Book.all.each do |book|
       if cheapest == nil
@@ -413,30 +477,39 @@ class UserInterface
     end
     puts "The cheapest book is #{cheapest.title} by #{cheapest.authors[0].name}, at $#{cheapest.price}. That's basically free!"
     puts "\n"
+
+    puts "(Press ENTER to return to the menu)"
+    any_key = gets.chomp
+    self.current_menu = 0
+    return show_menu
+
   end
 
   def bibs_n_beans
+    puts "\x1b[48;5;24m\x1b[38;5;255m*   Bibs' & Beans' Recommendations   *\e[0m\n\n"
       if @@counter == 0
-          puts "\n"
-          puts "..."
+          puts "\x1b[38;5;46m...\n\n"
           sleep(1.second) 
-          puts "We can't read."
-          puts "\n"
+          puts "Animals can't read.\n\n"
           sleep(1.second) 
           @@counter += 1
       elsif 
           @@counter == 1
-          puts "Alright, fine. Bib likes #{random_cat_book}!"
-          puts "\n"
+          puts "\x1b[38;5;46mAlright, fine. Bibs likes #{random_cat_book}!\n\n"
           sleep(1.second) 
           @@counter += 1
       elsif
           @@counter == 2
-          puts "Beans says you should read #{random_dog_book}!"
-          puts "\n"
+          puts "\x1b[38;5;46mBeans says you should read #{random_dog_book}!\n\n"
           sleep(1.second) 
           @@counter = 0
       end
+
+    puts "\e[0m(Press ENTER to return to the menu)"
+    any_key = gets.chomp
+    self.current_menu = 0
+    return show_menu
+
   end
 
   def random_cat_book
