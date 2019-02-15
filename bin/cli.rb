@@ -280,23 +280,43 @@ EOF
   def saved_jobs
     current_job_hunter = JobHunter.find_by(:id => @@user_id)
     if current_job_hunter
-      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
-      puts "Here are your saved jobs:".colorize(:color => :light_blue, :background => :white)
-      puts
-      job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
-      puts
-      jobs = saved_postings.each_with_index.map {|posting| posting}
+      if list_saved_jobs.count <= 0
+        puts "You have no saved jobs. Returning to main menu".colorize(:red)
+        main_menu
+      end
     else
       incorrect_id
       saved_jobs
     end
-    puts "Would you like to delete a posting? (y/n)"
-    user_response_input = gets.chomp.downcase
-    if user_response_input == 'y'
+    puts "What would you like to do? Please enter a number:".colorize(:green)
+    puts
+    puts "1. See job description".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "2. Delete job".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    puts "3. Return to main menu".colorize(:color => :light_blue, :background => :white)
+    puts "---------------------"
+    saved_jobs_response = gets.chomp.downcase
+    if saved_jobs_response == "1"
+      job_description
+    elsif saved_jobs_response == "2"
+      delete_job
+    elsif saved_jobs_response == "3"
+      main_menu
+
+    end
+  end
+
+  def delete_job
+    if list_saved_jobs.count <= 0
+      puts "You have no saved jobs. Returning to main menu".colorize(:red)
+      main_menu
+    else
+      puts
       puts 'Please enter the number of the job you would like to delete: '.colorize(:green)
       user_delete_input = gets.chomp.to_i
-      if user_delete_input > 0 && user_delete_input <= jobs.count
-        job_to_delete = jobs[user_delete_input - 1]
+      if user_delete_input > 0 && user_delete_input <= @@jobs.count
+        job_to_delete = @@jobs[user_delete_input - 1]
         job_to_delete.destroy
         puts "Job successfully deleted. Here are your saved jobs: ".colorize(:light_blue)
         main_menu
@@ -309,36 +329,27 @@ EOF
       puts "Here is your updated list of jobs:".colorize(:color => :light_blue, :background => :white)
       puts
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
-    elsif user_response_input == 'n'
-      puts "Returning to Main Menu".colorize(:color => :light_blue, :background => :white)
-      sleep(1)
-      main_menu
-    else
-      invalid_response
-      saved_jobs
-    end
+    end 
   end
 
 
   def apply_job
     current_job_hunter = JobHunter.find_by(:id => @@user_id)
     if current_job_hunter
-      saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
-      printed_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
-      job_titles = saved_postings.each_with_index.map {|posting| posting}
-      puts
+      if list_saved_jobs.count <=0
+        puts "You have no saved jobs. Returning to main menu".colorize(:red)
+        main_menu
+      else
+      end
     else
       incorrect_id
       apply_job
     end
-
     puts "Please enter the number for the job you would like to apply for: ".colorize(:green)
     user_saved_response = gets.chomp.to_i
-    if user_saved_response > 0 && user_saved_response <= job_titles.count
-      job = job_titles[user_saved_response - 1]
+    if user_saved_response > 0 && user_saved_response <= @@jobs.count
+      job = @@jobs[user_saved_response - 1]
       application_link = job.job_posting['application_link']
-
-
       match = /href\s*=\s*"([^"]*)"/.match(application_link)
       if match
         url = match[1]
@@ -376,7 +387,7 @@ EOF
 
   def exit
     abort("Thanks for using GIT Paid. Goodbye!".colorize(:color => :light_blue, :background => :white))
-  end 
+  end
 
   def would_you_like_to_save?
     puts "Would you like to save any of these jobs? (y/n)".colorize(:green)
@@ -469,5 +480,15 @@ EOF
     sleep(1)
     main_menu
     end
+  end
+
+  def list_saved_jobs
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
+    saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
+    puts "Here are your saved jobs:".colorize(:color => :light_blue, :background => :white)
+    puts
+    @@job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
+    puts
+    @@jobs = saved_postings.each_with_index.map {|posting| posting}
   end
 end #end of cli class
