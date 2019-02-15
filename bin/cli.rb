@@ -307,6 +307,44 @@ EOF
     end
   end
 
+  def job_description
+    current_job_hunter = JobHunter.find_by(:id => @@user_id)
+    if current_job_hunter
+      if list_saved_jobs.count <=0
+        puts "You have no saved jobs. Returning to main menu".colorize(:red)
+        main_menu
+      else
+      end
+    else
+      incorrect_id
+      apply_job
+    end
+    puts "Please enter the number for the job you want to know about: ".colorize(:green)
+    user_description_response = gets.chomp.to_i
+    if user_description_response > 0 && user_description_response <= @@jobs.count
+      job_to_describe = @@jobs[user_description_response - 1]
+      description = job_to_describe.job_posting['description']
+      initial_string = Sanitize.clean(description)
+      new_string = initial_string.delete!("\n")
+      puts "Here is the job description:".colorize(:color => :light_blue, :background => :white)
+      puts
+      puts new_string
+      puts
+      puts "Press 1 to return to main menu".colorize(:green)
+      done_reading = gets.chomp
+
+      if done_reading == "1"
+        main_menu
+      else
+        invalid_response
+        job_description
+      end
+    else
+      invalid_response
+      saved_jobs
+    end
+  end
+
   def delete_job
     if list_saved_jobs.count <= 0
       puts "You have no saved jobs. Returning to main menu".colorize(:red)
@@ -329,7 +367,7 @@ EOF
       puts "Here is your updated list of jobs:".colorize(:color => :light_blue, :background => :white)
       puts
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
-    end 
+    end
   end
 
 
@@ -491,4 +529,10 @@ EOF
     puts
     @@jobs = saved_postings.each_with_index.map {|posting| posting}
   end
+
+  # def sanitize(string)
+  #   initial_string = Sanitize.clean(string)
+  #   new_string = string.delete!("\n")
+  # end
+
 end #end of cli class
