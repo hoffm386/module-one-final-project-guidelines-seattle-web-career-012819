@@ -22,7 +22,6 @@ class Battle
     @our_team[cli.pokedex_array[4]] = cli.pokedex_array[4].hp
     @our_team[cli.pokedex_array[5]] = cli.pokedex_array[5].hp
 
-
     #load the opp team into a hash where the keys are the pokeon and the value their health
     # binding.pry
     @opp_team[Pokemon.find(@trainer.p1)] = Pokemon.find(@trainer.p1).hp
@@ -44,14 +43,21 @@ class Battle
     while choice != 3
       battle_choice(choice)
       if opp_poke_hp_check == true
+        win_or_loose
         opp_change_poke
       end
       opp_attack
       if curr_poke_hp_check == true
+        win_or_loose
         curr_change_poke
       end
       win_or_loose
     end
+  end
+
+  def forfeit
+    puts "You blacked out and they took your money, you're like 10"
+    exit
   end
 
   def battle_option
@@ -67,7 +73,7 @@ class Battle
     elsif battle_answer == "2"
       curr_change_poke
     elsif battle_answer == "3"
-      forefeit
+      forfeit
     else
       puts "Your answer is whack!"
     end
@@ -75,10 +81,10 @@ class Battle
 
   def battle_fight
     puts "Choose your move!"
-    puts "1. " + Move.find(curr_poke.move1).name
-    puts "2. " + Move.find(curr_poke.move2).name
-    puts "3. " + Move.find(curr_poke.move3).name
-    puts "4. " + Move.find(curr_poke.move4).name
+    puts "1. #{Move.find(@curr_poke.move1).name}"
+    puts "2. #{Move.find(@curr_poke.move2).name}"
+    puts "3. #{Move.find(@curr_poke.move3).name}"
+    puts "4. #{Move.find(@curr_poke.move4).name}"
 
     answer = gets.chomp
     if answer == "1"
@@ -113,6 +119,7 @@ class Battle
     dmg = m_name.damage.to_i
     @our_team[@curr_poke] = (@our_team[@curr_poke] - dmg)
     puts "#{@trainer.name} used #{m_name.name}"
+    puts "#{@opp_poke.name} did #{dmg} to #{@curr_poke.name}"
   end
 
   def opp_poke_hp_check
@@ -150,11 +157,20 @@ class Battle
     puts "please type in their name"
     answer = gets.chomp
 
-    if @our_team[answer.downcase] > 0
-      @curr_poke = @@our_team[answer.downcase]
-    else
-      puts "This pokemon dead"
+    arr = @our_team.keys.collect do |x|
+      x.name.downcase
+    end
+
+    if arr.include?(answer.downcase) == false
+      puts "Please type a valid name"
       curr_change_poke
+    else
+      if @our_team[Pokemon.find_by(name: answer.downcase)] > 0
+        @curr_poke = Pokemon.find_by(name: answer.downcase)
+      else
+        puts "This pokemon dead"
+        curr_change_poke
+      end
     end
   end
 
@@ -170,7 +186,6 @@ class Battle
 
   def win_condition
     arr = @opp_team.collect do |pokemon|
-      binding.pry
       pokemon[1] <= 0
     end
     if arr.include?(false)

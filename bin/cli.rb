@@ -10,7 +10,7 @@ class CLI
     def run
     puts "Seeding Databases"
     get_pokemon_from_api()
-    # seed_trainers
+    seed_trainers
     puts "Seeding Complete"
     welcome
     choice = options
@@ -98,7 +98,13 @@ class CLI
     end
 
     def battle
-      @@pokedex_array = [Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample]
+      while @@pokedex_array.size <= 6
+        pokeguy = Pokemon.all.sample
+        if @@pokedex_array.include?(pokeguy) == false
+          @@pokedex_array << pokeguy
+        end
+      end
+      # @@pokedex_array = [Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample]
       b = Battle.new(Trainer.all.sample, self)
       b.main_battle_loop
     end
