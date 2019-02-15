@@ -16,8 +16,9 @@ As-pitched, we wanted to create an application that interacts with an API and in
 
 #Populating the Database
 1. Open your terminal and navigate to the correct application folder where you cloned the repository
-2. Run 'rake db:migrate' to create database tables
-3. Run 'rake db:seed' to populate database tables with data gathered from the GITHUB Jobs API
+2. Run 'bundle install' to make sure you have all the necessary gems
+3. Run 'rake db:migrate' to create database tables
+4. Run 'rake db:seed' to populate database tables with data gathered from the GITHUB Jobs API
 
 #Running the App
 1. Run 'ruby bin/run.rb' in your terminal to open GIT Paid
