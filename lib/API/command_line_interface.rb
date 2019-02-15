@@ -88,7 +88,7 @@ class Command_line_interface
   def books_by_author
 
     # Set the author's name that the question will search for
-    author_name = "Gloria Steinem"
+    author_name = "Nora Roberts"
 
     # Find the book written by author_name
     author = Creator.find_by name: author_name
@@ -187,7 +187,7 @@ class Command_line_interface
   # Question 4
   def author_of_book
     # Set the book that the question will search for the author of
-    book_name = "Bear dreams / Elisha Cooper."
+    book_name = "A Little Magic"
 
     # Find the author that created the book
     book = Book.find_by name: book_name
