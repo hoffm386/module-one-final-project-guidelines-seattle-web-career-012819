@@ -15,8 +15,8 @@ class API_Hash
       if api["creator"] == nil
          creator_array << "Unknown Authors"
        else
-         # TODO: Ellen add handling for birth/death years
-         # TODO: Ellen add handling for trailing commas
+         # TODO: Add handling for birth/death years
+         # TODO: Add handling for trailing commas
          creator_array << api["creator"]
       end
     end

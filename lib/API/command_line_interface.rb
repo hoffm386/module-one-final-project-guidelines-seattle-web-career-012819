@@ -256,10 +256,11 @@ class Command_line_interface
       puts "Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages."
       puts
       @@stars += 1
+      puts
       puts "You have gained #{@@stars} Stars."
       puts
-      puts "*****************************************************"
-      puts "*****************************************************"
+      puts "          THANK YOU FOR PLAYING"
+      puts
       puts
     else
       puts `clear`
