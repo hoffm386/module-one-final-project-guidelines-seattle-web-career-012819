@@ -17,6 +17,7 @@ class API_Hash
        else
          # TODO: Ellen add handling for birth/death years
          # TODO: Ellen add handling for trailing commas
+         last_char = publisher_name[-1]
          creator_array << api["creator"]
       end
     end
@@ -31,11 +32,10 @@ class API_Hash
         publisher_array << "Unknown Publisher"
       else
         publisher_name = api["publisher"]
-        # remove unnecessary trailing comma from publisher_name
+        # remove unnecessary trailing comma or semicolon from publisher_name
         last_char = publisher_name[-1]
-        if last_char == ","
+        if last_char == "," || last_char == ";"
           publisher_name = publisher_name[0..-2]
-        # TODO: Ellen add handling for ; at end
         end
         publisher_array << publisher_name
       end
