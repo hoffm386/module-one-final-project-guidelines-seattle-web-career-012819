@@ -7,6 +7,7 @@ class CreateBooks < ActiveRecord::Migration[4.2]
             t.float :price
             t.string :genres
             t.text :description
+            t.string :maturity
         end
     end
 end

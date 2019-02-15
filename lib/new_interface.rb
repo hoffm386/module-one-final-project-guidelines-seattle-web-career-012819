@@ -1,6 +1,6 @@
 class UserInterface
   attr_reader :authors, :books, :publishers
-  attr_accessor :current_menu, :expect_search_term
+  attr_accessor :current_menu, :expect_search_term, :is_entering_date
 
   def initialize(authors, books, publishers)
     @@counter = 0
@@ -11,6 +11,7 @@ class UserInterface
 
     @current_menu = 0
     @expect_search_term = false
+    @is_entering_date = false
   end
 
   def get_data_from_menu_command
@@ -22,7 +23,7 @@ class UserInterface
       method(:find_books_by_price),
       method(:grab_bag),
       method(:find_cheapest_book),
-      method(:missing_method_1),
+      method(:find_books_by_mature),
       method(:books_by_page_count),
       method(:bibs_n_beans),
       method(:exit_program)
@@ -50,7 +51,7 @@ class UserInterface
           "Find the Price of a Given Book",
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
-          "Missing 1 (?)",
+          "Find Books with Mature Themes",
           "Find Books by Length",
           "Bibs' & Beans' Recommendations"
         ]
@@ -103,14 +104,14 @@ class UserInterface
       },
 
       {
-        title: "Cheapest Book",
+        title: "The Cheapest Book",
         header: "The book with the lowest price is:",
         body: []
       },
 
       {
-        title: "Missing 1 (?)",
-        header: "Something:",
+        title: "Book Search by Maturity Rating",
+        header: "Please enter a 'mature' or 'not' to search:",
         body: []
       },
 
@@ -180,9 +181,12 @@ class UserInterface
             return get_data_from_menu_command.call
           end
 
+          # Check to make sure there are no numbers in the user's input
           if !(user_input =~ /\A[-+]?[0-9]+\z/)
+
             # Point to the method we want to run
             method_to_call = get_data_from_menu_command
+
             # Store the result of the query
             if method_to_call
               results_hash = method_to_call.call(user_input)
@@ -199,10 +203,12 @@ class UserInterface
           end
         end
       else
+        # If we find letters using regular expression, throw an error.
         if user_input && !(user_input =~ /\A[-+]?[0-9]+\z/)
           text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
         end
       end
+
 
 
       # Display the title of this location in the program.
@@ -267,6 +273,10 @@ class UserInterface
 
       # Expect a search term.
       self.expect_search_term = true
+
+      if user_input.to_i == 8
+        self.is_entering_date = true
+      end
     end
 
     ### Show the appropriate menu and pass the input from the user.
@@ -364,13 +374,46 @@ class UserInterface
     end
     return_data
   end
-  ### END: BASIC REQUESTS
 
-  ### These Methods Need Hashes of:
-  ### :title, :header, and :body (an array of strings) added.
+  def find_books_by_page_count(book_pages)
+    self.books.select { |b|
+      b.page_count == book_pages
+    }.uniq
+  end
 
-  def missing_method_1
-    # nothing
+  def find_books_by_mature(rating)
+    return_data = {
+      title: "Book Search by Maturity Rating",
+      header: "",
+      body: []
+    }
+
+    matches = self.books.select { |b|
+      (rating.downcase == "mature" && !b.maturity.downcase.include?("not")) ||
+      b.maturity.downcase.include?(rating.downcase)
+    }.sample(10) { |e|
+      t_str = e.title
+      a_str = e.authors.map { |a|
+        a.name
+      }
+
+      a_str.flatten.uniq.join(" & ")
+      if a_str.class == Array
+        a_str = a_str.first
+      end
+
+      return_data[:body] << "#{t_str} by #{a_str}"
+    }
+
+    if matches.empty?
+      return_data[:header] = "Sorry, no books were found to match that maturity rating."
+    else
+      return_data[:header] = "The following books matched your search:"
+      matches.each do |m|
+        return_data[:body] << "#{m.title}, by #{m.authors.first.name}"
+      end
+    end
+    return_data
   end
 
   def length_abst(array)
@@ -424,16 +467,18 @@ class UserInterface
       header: "",
       body: []
     }
+
     ans = Book.all.select do |book|
       book.genres.downcase.include?(str.downcase) ||
       book.title.downcase.include?(str.downcase)
     end
 
-    if ans.empty? 
+    if ans.empty?
       pick = ["biography", "cat", "dog", "sports", "humor"]
-      return_data[:header] = "Sorry, nothing for that. Perhaps try #{pick.sample}?"
-      return_data[:header]
+      return_data[:header] = "Sorry, nothing for that. Perhaps try:"
+      return_data[:body] << "#{pick.sample}?"
     else
+      binding.pry
       return_data[:header] = "Here are the books in your genre selection: "
       ans.each do |book|
         return_data[:body] << "#{book.title}, by #{book.authors[0].name}."

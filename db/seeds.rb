@@ -12,7 +12,8 @@ search_terms = [
   "beans",
   "bibs", 
   "cat",
-  "dog"
+  "dog",
+  "MATURE"
 ]
 
 # Generate seeds based on each search term.
