@@ -6,6 +6,7 @@ BookDeal.destroy_all
 
 # Build a list of things to search for.
 search_terms = [
+  "fiction",
   "allen",
   "hal",
   "beans",

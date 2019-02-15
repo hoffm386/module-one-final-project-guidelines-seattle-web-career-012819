@@ -1,6 +1,6 @@
 require_relative '../config/environment'
 
-system "clear"
+# system "clear"
 
 # print "Please wait. Loading..."
 

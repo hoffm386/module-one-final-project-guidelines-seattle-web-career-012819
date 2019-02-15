@@ -24,7 +24,7 @@ class UserInterface
       method(:grab_bag),
       method(:find_cheapest_book),
       method(:find_books_by_mature),
-      method(:find_books_by_page_count),
+      method(:books_by_page_count),
       method(:bibs_n_beans),
       method(:exit_program)
     ]
@@ -52,7 +52,7 @@ class UserInterface
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
           "Find Books with Mature Themes",
-          "Find Books by Page Count",
+          "Find Books by Length",
           "Bibs' & Beans' Recommendations"
         ]
         # spacer will be printed inside of the menu
@@ -116,7 +116,7 @@ class UserInterface
       },
 
       {
-        title: "Missing 2 (?)",
+        title: "Find Books by Length",
         header: "Something:",
         body: []
       },
@@ -159,7 +159,7 @@ class UserInterface
       # we exit the program
       return exit_program
     else
-      if ( self.current_menu == 6 || self.current_menu == 7 || self.current_menu == 10 )
+      if ( self.current_menu == 6 || self.current_menu == 7 || self.current_menu == 9 || self.current_menu == 10 )
         divert_to_fancy_method = true
       end
 
@@ -370,7 +370,7 @@ class UserInterface
     end
 
     ans.each do |book|
-      return_data << "#{book.title}, by #{book.authors[0].name}."
+      return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
     end
     return_data
   end
@@ -414,6 +414,51 @@ class UserInterface
       end
     end
     return_data
+  end
+
+  def length_abst(array)
+    puts "Here are some options:"
+    array = array.sample(10)
+    array.each_with_index do |book, index|
+      puts "#{index+1}. #{book.title}, by #{book.authors[0].name}."
+    end
+  end
+
+  def books_by_page_count
+    puts "\n"
+    puts "What size of book are you looking for?"
+    puts "\n"
+    long_books = []
+    mid_range = []
+    short_books = []
+    Book.all.each do |book|
+      if book.page_count < 50
+        short_books << book
+      elsif book.page_count > 50 && book.page_count < 200
+        mid_range << book
+      elsif book.page_count >= 200
+        long_books << book
+      end
+    end
+      puts "1: Just a bus read. (Under 50 pages)"
+      puts "2: Give me a weekender. (Between 50 and 200 pages)"
+      puts "3: Vacation length! (Over 200 pages)"
+      puts "\n"
+    input = gets.chomp
+    puts "\n"
+    if input.to_i == 1
+      length_abst(short_books)
+    elsif input.to_i == 2
+      length_abst(mid_range)
+    elsif input.to_i == 3
+      length_abst(long_books)
+    else
+      puts "That wasn't an option..."
+    end
+    puts "\e[0m(Press ENTER to return to the menu)"
+    any_key = gets.chomp
+    self.current_menu = 0
+    return show_menu
   end
 
   def find_books_by_genre(str)
