@@ -1,6 +1,6 @@
 class UserInterface
   attr_reader :authors, :books, :publishers
-  attr_accessor :current_menu, :expect_search_term
+  attr_accessor :current_menu, :expect_search_term, :is_entering_date
 
   def initialize(authors, books, publishers)
     @@counter = 0
@@ -11,6 +11,7 @@ class UserInterface
 
     @current_menu = 0
     @expect_search_term = false
+    @is_entering_date = false
   end
 
   def get_data_from_menu_command
@@ -22,7 +23,7 @@ class UserInterface
       method(:find_books_by_price),
       method(:grab_bag),
       method(:find_cheapest_book),
-      method(:missing_method_1),
+      method(:find_books_by_mature),
       method(:missing_method_2),
       method(:bibs_n_beans),
       method(:exit_program)
@@ -50,7 +51,7 @@ class UserInterface
           "Find the Price of a Given Book",
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
-          "Missing 1 (?)",
+          "Find Books with Mature Themes",
           "Missing 2 (?)",
           "Bibs' & Beans' Recommendations"
         ]
@@ -103,14 +104,14 @@ class UserInterface
       },
 
       {
-        title: "Cheapest Book",
+        title: "The Cheapest Book",
         header: "The book with the lowest price is:",
         body: []
       },
 
       {
-        title: "Missing 1 (?)",
-        header: "Something:",
+        title: "Book Search by Date Published",
+        header: "Please enter a whole or partial date in the format YYYY-MM-DD below:",
         body: []
       },
 
@@ -180,29 +181,41 @@ class UserInterface
             return get_data_from_menu_command.call
           end
 
-          if !(user_input =~ /\A[-+]?[0-9]+\z/)
-            # Point to the method we want to run
-            method_to_call = get_data_from_menu_command
-            # Store the result of the query
-            if method_to_call
-              results_hash = method_to_call.call(user_input)
+          # Check to make sure there are no numbers in the user's input
+          if !(user_input =~ /\A[-+]?[0-9]+\z/) || self.is_entering_date
+            can_proceed_with_numbers = true
+            if (self.current_menu == 8 && user_input.length < 4 || self.user_input > 10)
+              can_proceed_with_numbers = false
+            end
 
-              # Update the menu with the result, conditionally, if anything has changed.
-              if results_hash[:body].length == 0 && self.current_menu != 5
-                text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
-              else
-                text_hash[:title]   = results_hash[:title]
-                text_hash[:header]  = results_hash[:header]
-                text_hash[:body]    = results_hash[:body]
+            if can_proceed_with_numbers
+
+              # Point to the method we want to run
+              method_to_call = get_data_from_menu_command
+
+              # Store the result of the query
+              if method_to_call
+                results_hash = method_to_call.call(user_input)
+
+                # Update the menu with the result, conditionally, if anything has changed.
+                if results_hash[:body].length == 0 && self.current_menu != 5
+                  text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
+                else
+                  text_hash[:title]   = results_hash[:title]
+                  text_hash[:header]  = results_hash[:header]
+                  text_hash[:body]    = results_hash[:body]
+                end
               end
             end
           end
         end
       else
+        # If we find letters using regular expression, throw an error.
         if user_input && !(user_input =~ /\A[-+]?[0-9]+\z/)
           text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
         end
       end
+
 
 
       # Display the title of this location in the program.
@@ -267,6 +280,10 @@ class UserInterface
 
       # Expect a search term.
       self.expect_search_term = true
+
+      if user_input.to_i == 8
+        self.is_entering_date = true
+      end
     end
 
     ### Show the appropriate menu and pass the input from the user.
@@ -365,44 +382,38 @@ class UserInterface
     return_data
   end
 
-  # def find_books_by_publish_date(book_date)
-  #   self.books.select { |b|
-  #     b.publish_date.downcase.include?( book_date.downcase )
-  #   }.uniq
-  # end
+  def find_books_by_publish_date(book_date)
+    return_data = {
+      title: "Book Search by Date Published",
+      header: "",
+      body: []
+    }
 
-  # def find_books_by_page_count(book_pages)
-  #   self.books.select { |b|
-  #     b.page_count == book_pages
-  #   }.uniq
-  # end
+    matches = self.books.select { |b|
+      b.publish_date.downcase.include?( book_date.downcase )
+    }.uniq
 
-  # def find_books_by_price(book_price)
-  #   self.books.select { |b|
-  #     b.price == book_price
-  #   }.uniq
-  # end
+    if matches.empty?
+      return_data[:header] = "Sorry, no books were published during that time period."
+    else
+      return_data[:header] = "The following books were released on or near #{book_date}:"
+      matches.each do |m|
+        return_data[:body] << "#{m.title}, by #{m.authors.join(" & ")}"
+      end
+    end
+    return_data
+  end
 
-  # def find_books_by_genre(book_genre)
-  #   self.books.select { |b|
-  #     b.genres.downcase.include?(book_genre.downcase)
-  #   }.uniq
-  # end
-
-  # def find_books_by_keyword(book_keyword)
-  #   self.books.select { |b|
-  #     b.description.downcase.include?( book_keyword.downcase )
-  #   }.uniq
-  # end
+  def find_books_by_page_count(book_pages)
+    self.books.select { |b|
+      b.page_count == book_pages
+    }.uniq
+  end
 
   ### END: BASIC REQUESTS
 
   ### These Methods Need Hashes of:
   ### :title, :header, and :body (an array of strings) added.
-
-  def missing_method_1
-    # nothing
-  end
 
   def missing_method_2
     # nothing
@@ -414,15 +425,18 @@ class UserInterface
       header: "",
       body: []
     }
+
     ans = Book.all.select do |book|
       book.genres.downcase.include?(str.downcase) ||
       book.title.downcase.include?(str.downcase)
     end
 
-    if ans.empty? 
+    if ans.empty?
       pick = ["biography", "cat", "dog", "sports", "humor"]
-      return_data[:header] = "Sorry, nothing for that. Perhaps try #{pick.sample}?"
+      return_data[:header] = "Sorry, nothing for that. Perhaps try:"
+      return_data[:body] << "#{pick.sample}?"
     else
+      binding.pry
       return_data[:header] = "Here are the books in your genre selection: "
       ans.each do |book|
         return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
