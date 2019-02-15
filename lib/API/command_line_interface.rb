@@ -62,6 +62,7 @@ class Command_line_interface
     answer = self.user_answer
     if answer == "a" || answer == "A"
       puts `clear`
+      system("clear")
       puts
       puts "Correct!! #{most_authors} has written #{book_count} books"
       @@stars += 1
@@ -73,6 +74,7 @@ class Command_line_interface
       puts
     else
       puts `clear`
+      system("clear")
       puts
       puts "Incorrect, please try again"
       puts "*****************************************************"
@@ -109,7 +111,7 @@ class Command_line_interface
     user_guess = self.user_answer
     # Check user's answer
     if user_guess == "c" || user_guess == "C"
-      puts 'clear'
+      system("clear")
       puts "Great job! #{author.name} did write #{book_by_author[0]}!"
       puts
       @@stars += 1
@@ -120,7 +122,7 @@ class Command_line_interface
       puts "*****************************************************"
       puts
     else
-      puts 'clear'
+      system("clear")
       puts
       puts "Incorrect. Try again."
       puts "*****************************************************"
@@ -154,7 +156,7 @@ class Command_line_interface
     puts "   c. #{publisher_name}"
     user_choice = self.user_answer
     if user_choice == "c" || user_choice == "C"
-      puts `clear`
+      system("clear")
       puts
       puts "Correct!!, #{publisher_name} has #{author_count} authors."
       puts
@@ -166,7 +168,7 @@ class Command_line_interface
       puts "**********************************************************"
       puts
     else
-      puts `clear`
+      system("clear")
       puts
       puts "Incorrect, Please try again"
       puts "**********************************************************"
@@ -203,7 +205,7 @@ class Command_line_interface
 
     # Check user's answer
     if user_guess == "b" || user_guess == "B"
-      puts 'clear'
+      system("clear")
       puts
       puts "Great job! #{book_name} was written by #{author.name}!"
       puts
@@ -216,7 +218,7 @@ class Command_line_interface
       puts "*****************************************************"
       puts
     else
-      puts 'clear'
+      system("clear")
       puts
       puts "Incorrect. Try again."
       puts "*****************************************************"
@@ -251,7 +253,7 @@ class Command_line_interface
     puts "   c.Physical #{digital_percent}, Digital #{physical_percent}%."
     user_choice = self.user_answer
     if user_choice == "b" || user_choice == "B"
-      puts `clear`
+      system("clear")
       puts
       puts "Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages."
       puts
@@ -259,11 +261,11 @@ class Command_line_interface
       puts
       puts "You have gained #{@@stars} Stars."
       puts
-      puts "          THANK YOU FOR PLAYING"
+      puts "THANK YOU FOR PLAYING"
       puts
       puts
     else
-      puts `clear`
+      system("clear")
       puts
       puts "Incorrect, Please try again"
       puts "*****************************************************"
