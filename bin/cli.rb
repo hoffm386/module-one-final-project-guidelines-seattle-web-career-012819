@@ -1,6 +1,4 @@
 class CLI
-  JobHunter.destroy_all
-  JobPosting.destroy_all
 puts <<-EOF
 
  $$$$$$\\  $$$$$$\\ $$$$$$$$\\       $$$$$$$\\           $$\\       $$\\
