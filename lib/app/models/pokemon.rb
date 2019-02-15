@@ -17,10 +17,7 @@ class Pokemon < ActiveRecord::Base
       end
 
       str+= "URL: #{self.url}\n"
-
       str+= "Appears in: #{self.games.collect {|game| game["name"].capitalize}.join(", ")}"
-      # binding.pry
-
       str
     end
 end

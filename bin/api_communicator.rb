@@ -7,29 +7,30 @@ def get_pokemon_from_api
 seed_games
 response_string = RestClient.get('https://pokeapi.co/api/v2/pokemon/?limit=20')
 response_hash = JSON.parse(response_string)
-
+#Seeding Pokemon
 response_hash["results"].each do |pokemon|
     pokemon_url_string = RestClient.get(pokemon["url"])
     pokemon_url_hash = JSON.parse(pokemon_url_string)
+    #creating the pokemon object
     if (pokemon_url_hash["types"].size == 1)
       Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"], hp: pokemon_url_hash["stats"].last["base_stat"])
     else
       Pokemon.create(name: pokemon["name"].downcase, url: pokemon["url"], weight: pokemon_url_hash["weight"], height: pokemon_url_hash["height"], type1: pokemon_url_hash["types"][0]["type"]["name"], type2: pokemon_url_hash["types"][1]["type"]["name"], hp: pokemon_url_hash["stats"].last["base_stat"])
     end
-
+    #creating the associations for the games
     pokemon_url_hash["game_indices"].each do |x|
-      # binding.pry
       PokemonGame.create(pokemon_id: Pokemon.last.id, game_id: Game.find_by(name: x["version"]["name"].downcase).id)
     end
+    #creating the moves
     pokemon_url_hash["moves"].each do |m|
       name = m["move"]["name"]
       pokemon_move_string = RestClient.get(m["move"]["url"])
       pokemon_move_hash = JSON.parse(pokemon_move_string)
-      # binding.pry
       Move.create(name: name, accuracy: pokemon_move_hash["accuracy"], pp: pokemon_move_hash["pp"], damage: pokemon_move_hash["power"], move_type: pokemon_move_hash["type"]["name"] )
       PokemonMove.create(pokemon_id: Pokemon.last.id, move_id: Move.last.id)
-
+    
     end
+    #grabbing the default 4 moves per pokemon
       Pokemon.all.last.update_attribute(:move1, Pokemon.all.last.moves.sample.id)
       Pokemon.all.last.update_attribute(:move2, Pokemon.all.last.moves.sample.id)
       Pokemon.all.last.update_attribute(:move3, Pokemon.all.last.moves.sample.id)
@@ -37,6 +38,7 @@ response_hash["results"].each do |pokemon|
     end
 
 end
+
 
 def seed_games
   Game.create(name: "red", generation: 1, release_date: "1996")

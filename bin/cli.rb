@@ -34,7 +34,6 @@ class CLI
         answer = gets.chomp
     end
 
-
     def option_answer(answer)
         if answer == "1"
             catch_pokemons
@@ -49,10 +48,6 @@ class CLI
             puts "Incorrect option, please try again!"
         end
     end
-
-
-
-
 
     def catch_pokemons
         random_pokemon = Pokemon.all.sample
@@ -104,9 +99,7 @@ class CLI
           @@pokedex_array << pokeguy
         end
       end
-      # @@pokedex_array = [Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample, Pokemon.all.sample]
       b = Battle.new(Trainer.all.sample, self)
       b.main_battle_loop
     end
-
 end
