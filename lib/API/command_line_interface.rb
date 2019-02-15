@@ -219,7 +219,7 @@ class Command_line_interface
     end
     digital_percent = digital_count / total_count.to_f * 100 #36.9% digital
     physical_percent = physical_count / total_count.to_f * 100 #63.1% physical
-    puts "Choose the correct percent usages between 'Physical' and 'Digital' formats."
+    puts "Of total checkouts, choose the percent usage for Physical and Digital formats."
     puts
     puts "   a.Physical #{physical_percent - 20}%, #{digital_percent +20}%."
     puts

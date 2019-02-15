@@ -15,6 +15,9 @@ class API_Hash
       if api["creator"] == nil
          creator_array << "Unknown Authors"
        else
+         # TODO: Ellen add handling for birth/death years
+         # TODO: Ellen add handling for trailing commas
+         last_char = publisher_name[-1]
          creator_array << api["creator"]
       end
     end
@@ -28,7 +31,13 @@ class API_Hash
       if api["publisher"] == nil
         publisher_array << "Unknown Publisher"
       else
-        publisher_array << api["publisher"]
+        publisher_name = api["publisher"]
+        # remove unnecessary trailing comma or semicolon from publisher_name
+        last_char = publisher_name[-1]
+        if last_char == "," || last_char == ";"
+          publisher_name = publisher_name[0..-2]
+        end
+        publisher_array << publisher_name
       end
     end
     publisher_array.uniq
@@ -40,7 +49,10 @@ class API_Hash
 
     self.api_hash_data.each do |api|
       book_hash = {}
-      book_hash["title"] = api["title"]
+      # if the name has a "/" in it, remove "/" and what follows
+      book_title = api["title"].split("/").first.strip
+      book_hash["title"] = book_title
+
       book_hash["creator_name"] = api["creator"]
       book_hash["publisher_name"] = api["publisher"]
       book_hash["usage_class"] = api["usageclass"]
@@ -49,5 +61,5 @@ class API_Hash
     book_title_array
   end
 
-  
+
 end #end of class
