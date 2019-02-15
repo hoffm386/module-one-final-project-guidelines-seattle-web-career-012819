@@ -12,6 +12,7 @@ class UserInterface
 
   def get_user_input
     # Format the input as a string and downcase it
+
     user_input = gets.chomp.to_s.downcase
 
     ### Assign a value to @current_menu
@@ -113,7 +114,7 @@ class UserInterface
   end
 
   def show_menu(user_input=nil)
-    if (self.current_menu == (-1) )
+    if ( self.current_menu == (-1) )
       # we exit the program
       return exit_program
 
@@ -127,14 +128,20 @@ class UserInterface
       # If the user is not in the main menu...
       # And if we are expecting a search term...
       # And we have received user_input...
-      if self.current_menu != 0 && self.expect_search_term && user_input
-        # Point to the method we want to run
-        method_to_call = get_data_from_menu_command
-        # Store the result of the query
-        if method_to_call
-          results_body = method_to_call.call(user_input)
-          # Update the menu with the result
-          text_hash[:body] = results_body
+      if self.current_menu != 0
+        if self.expect_search_term
+          if user_input
+            # Point to the method we want to run
+            method_to_call = get_data_from_menu_command
+            # Store the result of the query
+            if method_to_call
+              results_body = method_to_call.call(user_input)
+
+              # Update the menu with the result
+              text_hash[:body] = results_body
+
+            end
+          end
         end
       end
 
@@ -158,7 +165,7 @@ class UserInterface
       footer_msg = [
         "You may also type:#{new_line}",
         "\/b to go back to the menu\n",
-        "\/a to search by title again\n",
+        "\/a to make another request in this menu\n",
         "\/exit to leave the program.#{new_line}"
       ]
 
