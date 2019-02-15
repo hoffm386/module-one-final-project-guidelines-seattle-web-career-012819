@@ -8,4 +8,9 @@ To get started, follow these steps:
 2. Open up your terminal on your machine and navigate to where you have the program folder saved.
 3. From inside the folder, enter "Bundle install" into your terminal.
 4. Copy and paste the following command to your terminal: ruby bin/run.rb
-5. Browse some books with Bibs & Beans!
+5. Browse some books with Bibs & Beans.
+6. Like us on Facebook! 
+
+Just kidding, there's no Facebook for this. 
+
+Happy reading!
