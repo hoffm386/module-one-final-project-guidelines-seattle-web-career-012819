@@ -20,7 +20,7 @@ class CLI
     if sign_up_response == 'y'
       @@user_id = enter_user_id
       if JobHunter.find_by(:id => @@user_id)
-        puts "Sign in successful".colorize(:color => :light_blue, :background => :white)
+        puts "Sign in successful".colorize(:color => :blue, :background => :white)
         main_menu
       else
         incorrect_id
@@ -40,7 +40,7 @@ class CLI
     puts "Please enter your name".colorize(:green)
     hunter_name = gets.chomp.downcase
     puts
-    puts "Welcome, #{hunter_name.capitalize}!".colorize(:color => :light_blue, :background => :white)
+    puts "Welcome, #{hunter_name.capitalize}!".colorize(:color => :blue, :background => :white)
     puts
     puts "Please enter the tecnhologies you are fluent in i.e. ruby,java,javascript".colorize(:green)
     hunter_tecnhologies = gets.chomp.downcase
@@ -49,9 +49,9 @@ class CLI
     hunter_location = gets.chomp.downcase
     current_job_hunter = create_job_hunter(hunter_name,hunter_tecnhologies,hunter_location)
     puts "----------------------------------------------"
-    puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:color =>:light_blue, :background => :white)
+    puts "Thanks for signing up, #{hunter_name.capitalize}. Your User ID is: #{current_job_hunter['id']}.".colorize(:color =>:blue, :background => :white)
     puts
-    puts "Returning to Home".colorize(:color => :light_blue, :background => :white)
+    puts "Returning to Home".colorize(:color => :blue, :background => :white)
     sleep(1)
     welcome
   end
@@ -62,17 +62,17 @@ class CLI
     puts
     puts "What would you like to do? Please enter a number:".colorize(:green)
     puts "---------------------"
-    puts "1. Search Developer Jobs".colorize(:color => :light_blue, :background => :white)
+    puts "1. Search Developer Jobs".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "2. See Saved Jobs".colorize(:color => :light_blue, :background => :white)
+    puts "2. See Saved Jobs".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "3. Apply from saved jobs".colorize(:color => :light_blue, :background => :white)
+    puts "3. Apply From Saved Jobs".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "4. Have You Moved? Update Location Here".colorize(:color => :light_blue, :background => :white)
+    puts "4. Have You Moved? Update Location Here".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "5. Sign Out".colorize(:color => :light_blue, :background => :white)
+    puts "5. Sign Out".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "6. Exit Program".colorize(:color => :light_blue, :background => :white)
+    puts "6. Exit Program".colorize(:color => :blue, :background => :white)
     puts "---------------------"
     main_menu_response = gets.chomp.downcase
     if main_menu_response == "1"
@@ -85,7 +85,7 @@ class CLI
       update_location
     elsif main_menu_response == "5"
       @@user_id = nil
-      puts "Signing out".colorize(:color => :light_blue, :background => :white)
+      puts "Signing out".colorize(:color => :blue, :background => :white)
       sleep(1)
       welcome
     elsif main_menu_response == "6"
@@ -100,13 +100,15 @@ class CLI
     puts
     puts "How would you like to search?".colorize(:green)
     puts
-    puts "1. See local jobs".colorize(:color => :light_blue, :background => :white)
+    puts "1. See local jobs".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "2. Search by location".colorize(:color => :light_blue, :background => :white)
+    puts "2. Search by location".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "3. Search by title".colorize(:color => :light_blue, :background => :white)
+    puts "3. Search by title".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "4. Search by technologies".colorize(:color => :light_blue, :background => :white)
+    puts "4. Search by technologies".colorize(:color => :blue, :background => :white)
+    puts "---------------------"
+    puts "5. Return to main menu".colorize(:color => :blue, :background => :white)
     puts "---------------------"
     search_jobs_response = gets.chomp.downcase
 
@@ -118,6 +120,8 @@ class CLI
       search_by_title
     elsif search_jobs_response == "4"
       search_by_technologies
+    elsif search_jobs_response == "5"
+      main_menu
     else
       invalid_response
       search_jobs
@@ -290,11 +294,11 @@ class CLI
     end
     puts "What would you like to do? Please enter a number:".colorize(:green)
     puts
-    puts "1. See job description".colorize(:color => :light_blue, :background => :white)
+    puts "1. See job description".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "2. Delete job".colorize(:color => :light_blue, :background => :white)
+    puts "2. Delete job".colorize(:color => :blue, :background => :white)
     puts "---------------------"
-    puts "3. Return to main menu".colorize(:color => :light_blue, :background => :white)
+    puts "3. Return to main menu".colorize(:color => :blue, :background => :white)
     puts "---------------------"
     saved_jobs_response = gets.chomp.downcase
     if saved_jobs_response == "1"
@@ -326,7 +330,7 @@ class CLI
       description = job_to_describe.job_posting['description']
       initial_string = Sanitize.clean(description)
       new_string = initial_string.delete!("\n")
-      puts "Here is the job description:".colorize(:color => :light_blue, :background => :white)
+      puts "Here is the job description:".colorize(:color => :blue, :background => :white)
       puts
       puts new_string
       puts
@@ -356,7 +360,7 @@ class CLI
       if user_delete_input > 0 && user_delete_input <= @@jobs.count
         job_to_delete = @@jobs[user_delete_input - 1]
         job_to_delete.destroy
-        puts "Job successfully deleted.".colorize(:light_blue)
+        puts "Job successfully deleted.".colorize(:blue)
         main_menu
       else
         invalid_response
@@ -364,7 +368,7 @@ class CLI
       end
       puts
       updated_saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
-      puts "Here is your updated list of jobs:".colorize(:color => :light_blue, :background => :white)
+      puts "Here is your updated list of jobs:".colorize(:color => :blue, :background => :white)
       puts
       updated_job_titles = updated_saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
     end
@@ -394,7 +398,7 @@ class CLI
       else
         puts "No url provided."
       end
-      puts "Opening link to application".colorize(:color => :light_blue, :background => :white)
+      puts "Opening link to application".colorize(:color => :blue, :background => :white)
       sleep(1)
       system('open', url)
       system('clear')
@@ -408,13 +412,13 @@ class CLI
   def update_location
     current_job_hunter = JobHunter.find_by(:id => @@user_id)
     current_location = current_job_hunter.location
-    puts "Your current location is #{current_location.capitalize}".colorize(:color => :light_blue,:background => :white)
+    puts "Your current location is #{current_location.capitalize}".colorize(:color => :blue,:background => :white)
     puts
     puts "Please enter your new location".colorize(:green)
     new_location = gets.chomp.downcase
     if current_job_hunter
       current_job_hunter.update_column(:location, new_location)
-      puts "Thanks for updating your location! Returning to Main Menu".colorize(:color => :light_blue,:background => :white)
+      puts "Thanks for updating your location! Returning to Main Menu".colorize(:color => :blue,:background => :white)
       sleep(1)
       main_menu
     else
@@ -425,7 +429,7 @@ class CLI
 
 
   def exit
-    abort("Thanks for using GIT Paid. Goodbye!".colorize(:color => :light_blue, :background => :white))
+    abort("Thanks for using GIT Paid. Goodbye!".colorize(:color => :blue, :background => :white))
   end
 
   def would_you_like_to_save?
@@ -450,7 +454,7 @@ class CLI
   end
 
   def job_has_been_saved
-    puts "This job has been saved to your favorites.".colorize(:light_blue)
+    puts "This job has been saved to your favorites.".colorize(:blue)
   end
 
   def create_job_hunter(hunter_name,hunter_tecnhologies,hunter_location)
@@ -472,7 +476,7 @@ class CLI
   def see_local_jobs
     current_job_hunter = JobHunter.find_by(:id => @@user_id)
     current_location = current_job_hunter.location
-    puts "Your current location is #{current_location}".colorize(:color => :light_blue,:background => :white)
+    puts "Your current location is #{current_location}".colorize(:color => :blue,:background => :white)
     local_jobs = JobPosting.joins(:branch).where('LOWER(branches.location) LIKE ?', "%#{current_location}%")
     local_jobs_count = local_jobs.each_with_index.map {|job,index|"#{index + 1}. #{job[:title]}"}
     if local_jobs_count.count > 0
@@ -524,7 +528,7 @@ class CLI
   def list_saved_jobs
     current_job_hunter = JobHunter.find_by(:id => @@user_id)
     saved_postings = SavedPosting.where(:job_hunter_id => current_job_hunter.id)
-    puts "Here are your saved jobs:".colorize(:color => :light_blue, :background => :white)
+    puts "Here are your saved jobs:".colorize(:color => :blue, :background => :white)
     puts
     @@job_titles = saved_postings.each_with_index.map {|posting, index| puts "#{index + 1}. #{posting.job_posting.title}"}
     puts
