@@ -26,6 +26,7 @@ book_array.each do |book|
   publisher = Publisher.find_by ({"name" => book["publisher_name"]})
   Book.create(
     name: book["title"],
+    usage_class: book["usage_class"],
     creator: creator,
     publisher: publisher
   )
