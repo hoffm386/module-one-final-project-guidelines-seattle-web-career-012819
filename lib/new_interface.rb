@@ -24,7 +24,7 @@ class UserInterface
       method(:grab_bag),
       method(:find_cheapest_book),
       method(:find_books_by_mature),
-      method(:missing_method_2),
+      method(:find_books_by_page_count),
       method(:bibs_n_beans),
       method(:exit_program)
     ]
@@ -52,7 +52,7 @@ class UserInterface
           "Request a Grab Bag of Books to Discover",
           "Find the Cheapest Book",
           "Find Books with Mature Themes",
-          "Missing 2 (?)",
+          "Find Books by Page Count",
           "Bibs' & Beans' Recommendations"
         ]
         # spacer will be printed inside of the menu
@@ -110,8 +110,8 @@ class UserInterface
       },
 
       {
-        title: "Book Search by Date Published",
-        header: "Please enter a whole or partial date in the format YYYY-MM-DD below:",
+        title: "Book Search by Maturity Rating",
+        header: "Please enter a 'mature' or 'not' to search:",
         body: []
       },
 
@@ -182,29 +182,22 @@ class UserInterface
           end
 
           # Check to make sure there are no numbers in the user's input
-          if !(user_input =~ /\A[-+]?[0-9]+\z/) || self.is_entering_date
-            can_proceed_with_numbers = true
-            if (self.current_menu == 8 && user_input.length < 4 || self.user_input > 10)
-              can_proceed_with_numbers = false
-            end
+          if !(user_input =~ /\A[-+]?[0-9]+\z/)
 
-            if can_proceed_with_numbers
+            # Point to the method we want to run
+            method_to_call = get_data_from_menu_command
 
-              # Point to the method we want to run
-              method_to_call = get_data_from_menu_command
+            # Store the result of the query
+            if method_to_call
+              results_hash = method_to_call.call(user_input)
 
-              # Store the result of the query
-              if method_to_call
-                results_hash = method_to_call.call(user_input)
-
-                # Update the menu with the result, conditionally, if anything has changed.
-                if results_hash[:body].length == 0 && self.current_menu != 5
-                  text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
-                else
-                  text_hash[:title]   = results_hash[:title]
-                  text_hash[:header]  = results_hash[:header]
-                  text_hash[:body]    = results_hash[:body]
-                end
+              # Update the menu with the result, conditionally, if anything has changed.
+              if results_hash[:body].length == 0 && self.current_menu != 5
+                text_hash[:header]  = "Sorry, we didn't find a match for that. Please try again."
+              else
+                text_hash[:title]   = results_hash[:title]
+                text_hash[:header]  = results_hash[:header]
+                text_hash[:body]    = results_hash[:body]
               end
             end
           end
@@ -382,41 +375,45 @@ class UserInterface
     return_data
   end
 
-  def find_books_by_publish_date(book_date)
-    return_data = {
-      title: "Book Search by Date Published",
-      header: "",
-      body: []
-    }
-
-    matches = self.books.select { |b|
-      b.publish_date.downcase.include?( book_date.downcase )
-    }.uniq
-
-    if matches.empty?
-      return_data[:header] = "Sorry, no books were published during that time period."
-    else
-      return_data[:header] = "The following books were released on or near #{book_date}:"
-      matches.each do |m|
-        return_data[:body] << "#{m.title}, by #{m.authors.join(" & ")}"
-      end
-    end
-    return_data
-  end
-
   def find_books_by_page_count(book_pages)
     self.books.select { |b|
       b.page_count == book_pages
     }.uniq
   end
 
-  ### END: BASIC REQUESTS
+  def find_books_by_mature(rating)
+    return_data = {
+      title: "Book Search by Maturity Rating",
+      header: "",
+      body: []
+    }
 
-  ### These Methods Need Hashes of:
-  ### :title, :header, and :body (an array of strings) added.
+    matches = self.books.select { |b|
+      (rating.downcase == "mature" && !b.maturity.downcase.include?("not")) ||
+      b.maturity.downcase.include?(rating.downcase)
+    }.sample(10) { |e|
+      t_str = e.title
+      a_str = e.authors.map { |a|
+        a.name
+      }
 
-  def missing_method_2
-    # nothing
+      a_str.flatten.uniq.join(" & ")
+      if a_str.class == Array
+        a_str = a_str.first
+      end
+
+      return_data[:body] << "#{t_str} by #{a_str}"
+    }
+
+    if matches.empty?
+      return_data[:header] = "Sorry, no books were found to match that maturity rating."
+    else
+      return_data[:header] = "The following books matched your search:"
+      matches.each do |m|
+        return_data[:body] << "#{m.title}, by #{m.authors.first.name}"
+      end
+    end
+    return_data
   end
 
   def find_books_by_genre(str)

@@ -20,7 +20,8 @@ def create_books(array_of_volume_hashes, array_of_sale_hashes)
       page_count:   get_key_value( volume, "pageCount", 0 ),
       price:        get_key_value( list_price_hash, "amount", 0.00 ),
       genres:       get_key_value( volume, "categories", [] ).join("; "),
-      description:  get_key_value( volume, "description", "" )
+      description:  get_key_value( volume, "description", "" ),
+      maturity:     get_key_value( volume, "maturityRating", "")
     }
 
     # Shovel each new Book into our return data array
