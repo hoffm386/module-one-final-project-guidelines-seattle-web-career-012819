@@ -61,5 +61,4 @@ class API_Hash
     book_title_array
   end
 
-
 end #end of class
