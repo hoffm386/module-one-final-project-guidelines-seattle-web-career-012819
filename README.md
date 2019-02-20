@@ -1,59 +1,44 @@
-# Module One Final Project Guidelines
+# Module One Final Project
+Eli Merrell and Cris Hanks
 
-Congratulations, you're at the end of module one! You've worked crazy hard to get here and have learned a ton.
+#GIT Paid - A CLI application for finding your next Dev job
+#GIT Paid interacts with the GITHUB Jobs API which houses hundreds of worldwide Developer job openings
 
-For your final project, we'll be building a Command Line database application.
+#Overview: Project Vision
+As-pitched, we wanted to create an application that interacts with an API and includes the following functionality:
 
-## Project Requirements
+1. Job Hunters should be able to search for all jobs by name
+2. Job Hunters should be able to search for jobs by location
+3. Job Hunters should be able to search for jobs by technology
+4. Job Hunters should be able to favorite jobs and save them to a list
+5. Job Hunters should be able to browse favorited jobs
+6. Job Hunters should be able to apply for a job
 
-### Option One - Data Analytics Project
+#Populating the Database
+1. Open your terminal and navigate to the correct application folder where you cloned the repository
+2. Run 'bundle install' to make sure you have all the necessary gems
+3. Run 'rake db:migrate' to create database tables
+4. Run 'rake db:seed' to populate database tables with data gathered from the GITHUB Jobs API
 
-1. Access a Sqlite3 Database using ActiveRecord.
-2. You should have at minimum three models including one join model. This means you must have a many-to-many relationship.
-3. You should seed your database using data that you collect either from a CSV, a website by scraping, or an API.
-4. Your models should have methods that answer interesting questions about the data. For example, if you've collected info about movie reviews, what is the most popular movie? What movie has the most reviews?
-5. You should provide a CLI to display the return values of your interesting methods.  
-6. Use good OO design patterns. You should have separate classes for your models and CLI interface.
+#Running the App
+1. Run 'ruby bin/run.rb' in your terminal to open GIT Paid
+2. Once open, you'll be greeted with a main menu. Follow the on-screens to navigate
 
-  **Resource:** [Easy Access APIs](https://github.com/learn-co-curriculum/easy-access-apis)
+#GIT Paid Features
+1. Create User: Allows Job Hunters to create a profile with a name, preferred technologies, and location
+2. Search For Jobs: Allows Job Hunters to search GITHUB Jobs API by current user location, any location, title and technology
+3. Favorite Jobs to Profile: Allows Job Hunters to pull job info from GITHUB Jobs API and save them to their profile
+4. Access Saved Jobs: Remembers all saved jobs and allows users to perform any of the following actions:
+  - Delete a favorted post
+  - Read the description of a favorited post
+  - Return to the main menu
+5. Update User Location: Allows users to update their current location, updating and persisting changes to the database
+6. Apply for a Job: If URL available in API, redirects Job Hunters to that application link by simply pressing a button
+7. Sign Out: GIT Paid allows users to sign out and sign back in, remembering all of the saved profile and job info for future logins
+8. Exit: Allows users to quit the application at any point
 
-### Option Two - Command Line CRUD App
+#Attributions:
+You can access the GITHUB Jobs API for free here: https://jobs.github.com/api
 
-1. Access a Sqlite3 Database using ActiveRecord.
-2. You should have a minimum of three models.
-3. You should build out a CLI to give your user full CRUD ability for at least one of your resources. For example, build out a command line To-Do list. A user should be able to create a new to-do, see all todos, update a todo item, and delete a todo. Todos can be grouped into categories, so that a to-do has many categories and categories have many to-dos.
-4. Use good OO design patterns. You should have separate models for your runner and CLI interface.
-
-### Brainstorming and Proposing a Project Idea
-
-Projects need to be approved prior to launching into them, so take some time to brainstorm project options that will fulfill the requirements above.  You must have a minimum of four [user stories](https://en.wikipedia.org/wiki/User_story) to help explain how a user will interact with your app.  A user story should follow the general structure of `"As a <role>, I want <goal/desire> so that <benefit>"`. In example, if we were creating an app to randomly choose nearby restaurants on Yelp, we might write:
-
-* As a user, I want to be able to enter my name to retrieve my records
-* As a user, I want to enter a location and be given a random nearby restaurant suggestion
-* As a user, I should be able to reject a suggestion and not see that restaurant suggestion again
-* As a user, I want to be able to save to and retrieve a list of favorite restaurant suggestions
-
-## Instructions
-
-1. Fork and clone this repository.
-2. Build your application. Make sure to commit early and commit often. Commit messages should be meaningful (clearly describe what you're doing in the commit) and accurate (there should be nothing in the commit that doesn't match the description in the commit message). Good rule of thumb is to commit every 3-7 mins of actual coding time. Most of your commits should have under 15 lines of code and a 2 line commit is perfectly acceptable.
-3. Make sure to create a good README.md with a short description, install instructions, a contributors guide and a link to the license for your code.
-4. Make sure your project checks off each of the above requirements.
-5. Prepare a video demo (narration helps!) describing how a user would interact with your working project.
-    * The video should:
-      - Have an overview of your project.(2 minutes max)
-6. Prepare a presentation to follow your video.(3 minutes max)
-    * Your presentation should:
-      - Describe something you struggled to build, and show us how you ultimately implemented it in your code.
-      - Discuss 3 things you learned in the process of working on this project.
-      - Address, if anything, what you would change or add to what you have today?
-      - Present any code you would like to highlight.   
-7. *OPTIONAL, BUT RECOMMENDED*: Write a blog post about the project and process.
-
----
-### Common Questions:
-- How do I turn off my SQL logger?
-```ruby
-# in config/environment.rb add this line:
-ActiveRecord::Base.logger = nil
-```
+#Contributions:
+If you would like to view the code and submit any contributions, you may do so here: https://github.com/elimerrell/module-one-final-project-GITPaid-JobSeacrch-CLI 
