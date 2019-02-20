@@ -5,7 +5,3 @@ gem "sinatra-activerecord"
 gem "sqlite3"
 gem "pry"
 gem "require_all"
-gem 'rest-client'
-gem 'json'
-gem 'colorize'
-gem 'launchy', '~> 2.4', '>= 2.4.3'

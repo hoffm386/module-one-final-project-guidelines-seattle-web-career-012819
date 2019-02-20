@@ -12,4 +12,3 @@ tmp
 
 db/*.db
 db/schema.rb
-db/migrate/*.db
