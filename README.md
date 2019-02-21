@@ -7,10 +7,12 @@ In this program, you can
 4. Battle a trainer
 
 Install Instructions
-1. Migrate Database using: rake db:migrate
-2. Set the limit in api_communicator.rb:ln:8. This is the number of pokemon in the database
-3. The database will seed, then you will be shown a cli prompt for your options
-  3a. If you do not want the database to seed the second time you run the program (as it takes a while and will create duplicates), comment out cli.rb:ln:12 and cli.rb:ln:13
+1. Run `bundle install` to install the relevant gems and dependencies
+2. Migrate Database using: `rake db:migrate`
+3. Set the limit in api_communicator.rb:ln:8. This is the number of pokemon in the database
+4. Run `ruby bin/run.rb` to run the program
+   - The database will seed when you run it the first time, then you will be shown a cli prompt for your options
+   - If you do not want the database to seed the second time you run the program (as it takes a while and will create duplicates), comment out cli.rb:ln:11 through cli.rb:ln:14
 
 This program is licensed under creative commons, feel free to use it in anyway you see fit.
 
