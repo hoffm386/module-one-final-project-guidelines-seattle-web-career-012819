@@ -153,6 +153,35 @@ class CLI
     end
   end
 
+  def select_job_to_save(job_list)
+    job_list.each_with_index.map do |job,index|
+      puts "#{index + 1}. #{job[:title]}"
+    end
+    puts
+    want_to_save = would_you_like_to_save?
+    if want_to_save == 'y'
+      if JobHunter.find_by(:id => @@user_id)
+        puts green("Please enter the number for the job you would like to save: ")
+        user_saved_response = gets.chomp.to_i
+        #check to see if user response is valid
+        if user_saved_response.between?(1, job_list.count)
+          job = job_list[user_saved_response - 1]
+          hunter = @@user_id
+          posting = JobPosting.find(job["id"])['id']
+          if JobPosting.find_by(:id => posting)
+            save_job(hunter,posting)
+            job_has_been_saved
+            main_menu
+          end
+        end
+      else
+        incorrect_id
+      end
+    elsif want_to_save == 'n'
+      main_menu
+    end
+  end
+
   def search_by_location
     puts
     puts green("Please enter the location where you want to work")
@@ -161,46 +190,12 @@ class CLI
     if jobs_by_location.count > 0
       puts green("Here are the jobs in your area:")
       puts
-      jobs_by_location.each_with_index.map do |job,index|
-        puts "#{index + 1}. #{job[:title]}"
-      end
-      puts
-      want_to_save = would_you_like_to_save?
-      if want_to_save == 'y'
-        if JobHunter.find_by(:id => @@user_id)
-          puts green("Please enter the number for the job you would like to save: ")
-          user_saved_response = gets.chomp.to_i
-          #check to see if user response is valid
-          if user_saved_response.between?(1, jobs_by_location.count)
-            job = jobs_by_location[user_saved_response - 1]
-            hunter = @@user_id
-            posting = JobPosting.find(job["id"])['id']
-            if JobPosting.find_by(:id => posting)
-              save_job(hunter,posting)
-              job_has_been_saved
-              main_menu
-            else
-              invalid_response
-              search_by_location
-            end
-          else
-            invalid_response
-            search_by_location
-          end
-        else
-          incorrect_id
-          search_by_location
-        end
-      elsif want_to_save == 'n'
-        main_menu
-      else
-        invalid_response
-        search_by_location
-      end
+      select_job_to_save(jobs_by_location)
+      invalid_response
     else
       no_results
-      search_by_location
     end
+    search_by_location
   end
 
   def search_by_title
@@ -211,49 +206,12 @@ class CLI
     if jobs_by_title.count > 0
       puts green("Here are the current openings with similar titles:")
       puts
-      jobs_by_title.each_with_index.map do |job,index|
-        puts "#{index + 1}. #{job[:title]}"
-      end
-      puts
-      want_to_save = would_you_like_to_save?
-      if want_to_save == 'y'
-        if JobHunter.find_by(:id => @@user_id)
-          puts green("Please enter the number for the job you would like to save: ")
-          user_saved_response = gets.chomp.to_i
-          #check to see if user response is valid
-          if user_saved_response.between?(1, jobs_by_title.count)
-            #return the hash of the job that the job hunter wants to save
-            job = jobs_by_title[user_saved_response - 1]
-            #get the id of the most recently added jub hunter in the database
-            hunter = @@user_id
-            #get the id of the job posting that matches the job they want to save
-            posting = JobPosting.find(job["id"])['id']
-            if JobPosting.find_by(:id => posting)
-              save_job(hunter,posting)
-              job_has_been_saved
-              main_menu
-            else
-              invalid_response
-              search_by_title
-            end
-          else
-            invalid_response
-            search_by_title
-          end
-        else
-          incorrect_id
-          search_by_title
-        end
-      elsif want_to_save == 'n'
-        main_menu
-      else
-        invalid_response
-        search_by_title
-      end
+      select_job_to_save(jobs_by_title)
+      invalid_response
     else
       no_results
-      search_by_title
     end
+    search_by_title
   end
 
   def search_by_technologies
@@ -263,53 +221,14 @@ class CLI
     #************************how can we search multiple in one search?**************************
 
     jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%")
-
     if jobs_by_technology.count > 0
       puts "Here are the jobs that match your search: "
-      puts
-      jobs_by_technology.each_with_index.map do |job,index|
-        puts "#{index + 1}. #{job[:title]}"
-      end
-      puts
-      want_to_save = would_you_like_to_save?
-      if want_to_save == 'y'
-        if JobHunter.find_by(:id => @@user_id)
-          puts green("Please enter the number for the job you would like to save: ")
-          user_saved_response = gets.chomp.to_i
-          #check to see if user response is valid
-          if user_saved_response.between?(1, jobs_by_technology.count)
-            #return the hash of the job that the job hunter wants to save
-            job = jobs_by_technology[user_saved_response - 1]
-            #get the id of the most recently added jub hunter in the database
-            hunter = @@user_id
-            #get the id of the job posting that matches the job they want to save
-            posting = JobPosting.find(job["id"])['id']
-            if JobPosting.find_by(:id => posting)
-              save_job(hunter,posting)
-              job_has_been_saved
-              main_menu
-            else
-              invalid_response
-              search_by_technologies
-            end
-          else
-          invalid_response
-          search_by_technologies
-          end
-        else
-          incorrect_id
-          search_by_technologies
-        end
-      elsif want_to_save == 'n'
-        main_menu
-      else
-        invalid_response
-        search_by_technologies
-      end
+      select_job_to_save(jobs_by_technology)
+      invalid_response
     else
       no_results
-      search_by_technologies
     end
+    search_by_technologies
   end
 
   def saved_jobs
@@ -518,49 +437,13 @@ class CLI
     end
     if local_jobs_count.count > 0
       puts "Here are the jobs in your area:"
-      local_jobs.each_with_index.map do |job,index|
-        puts "#{index + 1}. #{job[:title]}"
-      end
-      puts
-      want_to_save = would_you_like_to_save?
-      if want_to_save == 'y'
-        if JobHunter.find_by(:id => @@user_id)
-          puts green("Please enter the number for the job you would like to save: ")
-          user_saved_response = gets.chomp.to_i
-          #check to see if user response is valid
-          if user_saved_response.between?(1, local_jobs.count)
-            #return the hash of the job that the job hunter wants to save
-            job = local_jobs[user_saved_response - 1]
-            #get the id of the most recently added jub hunter in the database
-            hunter = @@user_id
-            #get the id of the job posting that matches the job they want to save
-            posting = JobPosting.find(job["id"])['id']
-            if JobPosting.find_by(:id => posting)
-              save_job(hunter,posting)
-              job_has_been_saved
-              main_menu
-            else
-              invalid_response
-              search_by_technologies
-            end
-          else
-          invalid_response
-          search_by_technologies
-          end
-        else
-          incorrect_id
-          search_by_technologies
-        end
-      elsif want_to_save == 'n'
-        main_menu
-      else
-        invalid_response
-        see_local_jobs
-      end
+      select_job_to_save(local_jobs)
+      invalid_response
+      see_local_jobs
     else
-    puts red("There are no jobs in your area. Returning to main menu")
-    sleep(1)
-    main_menu
+      puts red("There are no jobs in your area. Returning to main menu")
+      sleep(1)
+      main_menu
     end
   end
 
