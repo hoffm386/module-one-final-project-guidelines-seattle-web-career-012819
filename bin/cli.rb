@@ -215,12 +215,22 @@ class CLI
   end
 
   def search_by_technologies
-    puts "Please enter the technology you would like to find: "
+    puts "Please enter the technologies you would like to find (separated by commas): "
     user_technology_response = gets.chomp
 
-    #************************how can we search multiple in one search?**************************
+    # make the technologies into a list like ["html", "css"]
+    technologies = user_technology_response.split(",").map {|t| t.strip}
 
-    jobs_by_technology = JobPosting.where("job_postings.description LIKE ?", "%#{user_technology_response}%")
+    # dynamically build the SQL query.  ActiveRecord is smart and will build
+    # this "lazily", meaning that the SQL will not actually execute until it has
+    # filtered by all of the relevant technologies
+    job_subset = JobPosting.all
+    technologies.each do |technology|
+      job_subset = job_subset.where("job_postings.description LIKE ?", "%#{technology}%")
+    end
+    
+    # reassign the variable name when we're done with the query, for clarity
+    jobs_by_technology = job_subset
     if jobs_by_technology.count > 0
       puts "Here are the jobs that match your search: "
       select_job_to_save(jobs_by_technology)
