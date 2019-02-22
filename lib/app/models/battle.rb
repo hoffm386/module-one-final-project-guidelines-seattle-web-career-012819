@@ -15,20 +15,14 @@ class Battle
 
   def load_teams
     #load our team into a hash where the keys are the pokemon and the value is the health
-    @our_team[cli.pokedex_array[0]] = cli.pokedex_array[0].hp
-    @our_team[cli.pokedex_array[1]] = cli.pokedex_array[1].hp
-    @our_team[cli.pokedex_array[2]] = cli.pokedex_array[2].hp
-    @our_team[cli.pokedex_array[3]] = cli.pokedex_array[3].hp
-    @our_team[cli.pokedex_array[4]] = cli.pokedex_array[4].hp
-    @our_team[cli.pokedex_array[5]] = cli.pokedex_array[5].hp
+    cli.pokedex_array.each do |pokemon|
+      @our_team[pokemon] = pokemon.hp
+    end
 
     #load the opp team into a hash where the keys are the pokeon and the value their health
-    @opp_team[Pokemon.find(@trainer.p1)] = Pokemon.find(@trainer.p1).hp
-    @opp_team[Pokemon.find(@trainer.p2)] = Pokemon.find(@trainer.p2).hp
-    @opp_team[Pokemon.find(@trainer.p3)] = Pokemon.find(@trainer.p3).hp
-    @opp_team[Pokemon.find(@trainer.p4)] = Pokemon.find(@trainer.p4).hp
-    @opp_team[Pokemon.find(@trainer.p5)] = Pokemon.find(@trainer.p5).hp
-    @opp_team[Pokemon.find(@trainer.p6)] = Pokemon.find(@trainer.p6).hp
+    @trainer.pokemons.each do |pokemon|
+      @opp_team[pokemon] = pokemon.hp
+    end
   end
 
   def battle_welcome
@@ -38,7 +32,7 @@ class Battle
     puts @trainer.flavor_text
     puts ""
   end
- 
+
   #This method runs our battle
   def main_battle_loop
     battle_welcome
@@ -86,9 +80,8 @@ class Battle
 
   def battle_fight
     puts ""
-    puts "Choose your move!" 
-    move_array = Move.where(id: [@curr_poke.move1, @curr_poke.move2, @curr_poke.move3, @curr_poke.move4])
-    move_array.each_with_index do |m, index|
+    puts "Choose your move!"
+    @curr_poke.moves.each_with_index do |m, index|
       puts "#{index + 1}. #{m.name}"
     end
     puts ""
@@ -99,7 +92,7 @@ class Battle
       return
     end
 
-    move = move_array[answer.to_i - 1]
+    move = @curr_poke.moves[answer.to_i - 1]
     puts ""
     @opp_team[@opp_poke] = (@opp_team[opp_poke] - move.damage.to_i)
     puts "You did #{move.damage.to_i} damage to #{@opp_poke.name.capitalize}"
@@ -108,13 +101,7 @@ class Battle
   end
 
   def opp_attack
-    arr = []
-    arr << Move.find(opp_poke.move1)
-    arr << Move.find(opp_poke.move2)
-    arr << Move.find(opp_poke.move3)
-    arr << Move.find(opp_poke.move4)
-    arr.sample
-    m_name = Move.find(arr.sample.id)
+    m_name = @opp_poke.moves.sample
     dmg = m_name.damage.to_i
     @our_team[@curr_poke] = (@our_team[@curr_poke] - dmg)
     if @our_team[@curr_poke] < 0
@@ -167,12 +154,12 @@ class Battle
     result = @our_team.find do |k, v|
       k.name.downcase == answer.downcase && v > 0
     end
-    
+
     if result.nil?
       puts ""
       puts "Please type a valid name"
       curr_change_poke
-    else 
+    else
       @curr_poke = result.first
     end
   end

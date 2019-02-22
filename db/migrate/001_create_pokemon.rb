@@ -8,10 +8,6 @@ class CreatePokemon < ActiveRecord::Migration
             t.string :type2
             t.string :url
             t.integer :hp
-            t.integer :move1 
-            t.integer :move2
-            t.integer :move3
-            t.integer :move4
         end
     end
 end
