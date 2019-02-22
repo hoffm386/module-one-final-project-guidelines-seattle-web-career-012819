@@ -7,11 +7,20 @@ class CLI
     @@pokedex_array
   end
 
+  def seed_if_needed
+    # assume that if there are any pokemon in the database, we have already seeded
+    if Pokemon.count == 0
+      puts "How many pokemon would you like to get from the API?"
+      answer = gets.chomp.to_i
+      puts "Seeding Databases..."
+      get_pokemon_from_api(answer)
+      seed_trainers
+      puts "Seeding Complete"
+    end
+  end
+
   def run
-    puts "Seeding Databases..."
-    get_pokemon_from_api()
-    seed_trainers
-    puts "Seeding Complete"
+    seed_if_needed
     welcome
     choice = options
     while choice != 4
