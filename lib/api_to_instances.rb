@@ -5,6 +5,7 @@ def create_books(array_of_volume_hashes, array_of_sale_hashes)
   output = [] # Prepare our return data
 
   # Iterate over our array of "volumeInfo" hashes.
+  # TODO: figure out what "index" is doing here
   array_of_volume_hashes.each_with_index do |volume, index|
 
     # Parse the "listPrice" key's hash value from the "saleInfo" hash for this book.
@@ -53,6 +54,7 @@ def create_authors(array_of_volume_hashes)
     }
 
     # Shovel each new Author into our return data array
+    # TODO: only create author if it doesn't already exist
     output << Author.create(author_arguments)
   end
 
@@ -74,10 +76,12 @@ def create_publishers(array_of_volume_hashes)
     }
 
     # Shovel each new Publisher into our return data array
+    # TODO: only create publisher if it doesn't already exist
     output << Publisher.create(publisher_arguments)
   end
 
   # Return our list of new Authors!
+  # TODO: correct this ^ comment
   output
 end
 
@@ -86,6 +90,7 @@ def create_bookdeals(author_array, book_array, publisher_array)
   output = [] # Prepare our return data
 
   # Iterate over our arrays of seed objects.
+  # TODO: figure out what "index" is doing here
   author_array.each_with_index do |author, index|
 
     # Create a hash of BookDeal arguments.
@@ -100,5 +105,6 @@ def create_bookdeals(author_array, book_array, publisher_array)
   end
 
   # Return our swanky array of BookDeals!
+  # TODO: determine whether output array is actually needed
   output
 end

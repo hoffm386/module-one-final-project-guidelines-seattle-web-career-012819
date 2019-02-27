@@ -1,5 +1,6 @@
 # Iterate over a hash and return the value stored in key "key_string".
 # Returns argument passed to "type_expected" if the key doesn't exist. (such as: {}, [], 0, etc.)
+# TODO: convert this to safe navigation
 def get_key_value(data_hash, key_string, type_expected)
   output = (data_hash[key_string] != nil) ? data_hash[key_string] : type_expected
 end
