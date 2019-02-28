@@ -7,28 +7,23 @@ class InstanceCreator
     @array_of_sale_hashes = json_sales
   end
 
-  # Feed in the arrays of "volumeInfo" hashes and "saleInfo" hashes.
-  # Create Books out of them!
   def create_books
 
     output = [] # Prepare our return data
 
-    # Iterate over our array of "volumeInfo" hashes.
-    # TODO: figure out what "index" is doing here
-    array_of_volume_hashes.each_with_index do |volume, index|
+    # iterate over the array of "volumeInfo" hashes and array of "saleInfo" hashes
+    array_of_volume_hashes.zip(array_of_sale_hashes).each do |volume, sale|
 
-      # Parse the "listPrice" key's hash value from the "saleInfo" hash for this book.
-      list_price_hash = ApiIterator.get_key_value( array_of_sale_hashes[index], "listPrice", {} )
-
-      # Parse the "amount" key's numerical value from "list_price_hash".
+      # Parse the "amount" key's numerical value from "listPrice" hash in sale
       # Defaults to a float value of 0.00 if there is no pricing data returned.
+      price = sale.dig("listPrice", "amount") ? sale["listPrice"]["amount"] : 0.00
 
       # Create a hash of Book arguments
       book_arguments = {
         title:        ApiIterator.get_key_value( volume, "title", "" ),
         publish_date: ApiIterator.get_key_value( volume, "publishedDate", "" ),
         page_count:   ApiIterator.get_key_value( volume, "pageCount", 0 ),
-        price:        ApiIterator.get_key_value( list_price_hash, "amount", 0.00 ),
+        price:        price,
         genres:       ApiIterator.get_key_value( volume, "categories", [] ).join("; "),
         description:  ApiIterator.get_key_value( volume, "description", "" ),
         maturity:     ApiIterator.get_key_value( volume, "maturityRating", "")
@@ -53,9 +48,15 @@ class InstanceCreator
       authors_array = ApiIterator.get_key_value( volume, "authors", [] )
 
       # Conditionally join multiple authors into one string, separated with " & ", to file them under a unique co-author listing.
+      author_string = if authors_array.length > 1
+        authors_array.join(" & ")
       # Otherwise return the only name found as a string.
+      elsif authors_array.length == 1
+        authors_array.first
       # Defaults to returning an empty string if no name is found.
-      author_string = (authors_array.length > 1) ? authors_array.join(" & ") : authors_array.join("")
+      else
+        ""
+      end
 
       # Create a hash of Author arguments
       author_arguments = {
@@ -63,8 +64,7 @@ class InstanceCreator
       }
 
       # Shovel each new Author into our return data array
-      # TODO: only create author if it doesn't already exist
-      output << Author.create(author_arguments)
+      output << Author.find_or_create_by(author_arguments)
     end
 
     # Return our array of Authors!
@@ -85,12 +85,10 @@ class InstanceCreator
       }
 
       # Shovel each new Publisher into our return data array
-      # TODO: only create publisher if it doesn't already exist
-      output << Publisher.create(publisher_arguments)
+      output << Publisher.find_or_create_by(publisher_arguments)
     end
 
-    # Return our list of new Authors!
-    # TODO: correct this ^ comment
+    # Return our list of new Publishers!
     output
   end
 
@@ -99,14 +97,13 @@ class InstanceCreator
     output = [] # Prepare our return data
 
     # Iterate over our arrays of seed objects.
-    # TODO: figure out what "index" is doing here
-    author_array.each_with_index do |author, index|
+    author_array.zip(book_array, publisher_array).each do |author, book, publisher|
 
       # Create a hash of BookDeal arguments.
       bookdeal_arguments = {
         author: author,
-        book: book_array[index],
-        publisher: publisher_array[index]
+        book: book,
+        publisher: publisher
       }
 
       # Shovel each BookDeal into our return data array
@@ -114,7 +111,6 @@ class InstanceCreator
     end
 
     # Return our swanky array of BookDeals!
-    # TODO: determine whether output array is actually needed
     output
   end
 end
