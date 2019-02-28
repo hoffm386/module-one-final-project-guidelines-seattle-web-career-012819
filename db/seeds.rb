@@ -17,7 +17,7 @@ search_terms = [
 ]
 
 # Generate seeds based on each search term.
-# TODO: where is this method?
 search_terms.each do |search|
-  generate_seeds_from_search_term( search )
+  seed_batch = SeedBatch.new(search)
+  seed_batch.generate_seeds_from_search_term
 end
