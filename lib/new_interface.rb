@@ -1,14 +1,8 @@
 class UserInterface
-  # TODO: figure out if these member variables are actually necessary
-  attr_reader :authors, :books, :publishers
   attr_accessor :current_menu, :expect_search_term, :is_entering_date
 
-  def initialize(authors, books, publishers)
+  def initialize()
     @@counter = 0
-
-    @authors = authors
-    @books = books
-    @publishers = publishers
 
     @current_menu = 0
     @expect_search_term = false
@@ -16,7 +10,6 @@ class UserInterface
   end
 
   def get_data_from_menu_command
-    # TODO: show how this could be done with a helper method rather than an array
     methods_array = [
       method(:find_books_by_title),
       method(:find_books_by_author),
@@ -237,7 +230,6 @@ class UserInterface
       ]
 
       footer_msg.each_with_index do |f, index|
-        # TODO: figure out what "index" is doing here
         if index==0
           puts "\x1b[38;5;248m#{f}"
         else
@@ -291,25 +283,24 @@ class UserInterface
     puts "Pick your poison:"
     puts "\n"
 
-    # TODO: suggest more meaningful variable names
-    arr = Book.all.sample(3)
+    book_object_list = Book.all.sample(3)
 
-    result = arr.map do |book|
-      arr2 = book.description.split(/ /)
-      new_str = arr2[1..9].join(" ")
-      new_str << "..."
-      new_str.prepend("...")
+    shortened_descriptions = book_object_list.map do |book|
+      book_description_list = book.description.split(/ /)
+      "...#{book_description_list[1..9].join(" ")}..."
     end
 
-    result.each_with_index do |str, index|
+    shortened_descriptions.each_with_index do |str, index|
       puts "#{index+1}#{str}"
     end
 
     input = gets.chomp
-    # TODO: convert to multi-line string
+    chosen_book = book_object_list[input.to_i - 1]
+
     puts "\n"
-    puts "You've chosen #{arr[input.to_i - 1].title}, by #{arr[input.to_i - 1].authors[0].name}. Happy reading!"
+    puts "You've chosen #{chosen_book.title}, by #{chosen_book.authors[0].name}. Happy reading!"
     puts "\n"
+
     sleep(1.second)
 
     puts "(Press any key to return to the menu)"
@@ -322,118 +313,79 @@ class UserInterface
   ### BEGIN: BASIC REQUESTS (Merged as a failsafe)
 
   def find_books_by_title(book_title)
-    # TODO: move "return data" to the end; up here only needs to be "body"
+    body = Book.where("title LIKE ?", "%#{book_title.downcase}%").map do |book|
+      "#{book.title} by #{book.authors.first.name}"
+    end
+
     return_data = {
       title: "Matching Book Titles",
       header: "The following titles matched your keyword:",
-      body: []
+      body: body
     }
 
-    # TODO: replace variables with more meaningful ones
-    self.books.select { |b|
-      b.title.downcase.include?( book_title.downcase )
-    }.each { |e|
-      t_str = e.title
-      a_str = e.authors.map { |a|
-        a.name
-      }
-
-      a_str.flatten.uniq.join(" & ")
-      # TODO: figure out what this is doing
-      if a_str.class == Array
-        a_str = a_str[0]
-      end
-
-      return_data[:body] << "#{t_str} by #{a_str}"
-    }
     return_data
   end
 
   def find_books_by_author(str)
-    # TODO: refactor to eliminate duplicate functionality with find_books_by_publisher
-    # TODO: move "return data" to the end; up here only needs to be "body"
+    body = Book.joins(:authors).where("authors.name LIKE ?", "%#{str}").map do |book|
+      "#{book.title}, by #{book.authors[0].name}."
+    end
+
     return_data = {
       title: "Matching Books by Author",
       header: "This author has written or collaborated on:",
-      body: []
+      body: body
     }
 
-    # TODO: replace variables with more meaningful names
-    ans = Book.all.select do |book|
-      book.authors[0].name.downcase.include?(str.downcase)
-    end
-
-    ans.each do |book|
-      return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
-    end
     return_data
   end
 
   def find_books_by_publisher(str)
-    # TODO: refactor to eliminate duplicate functionality with find_books_by_author
-    # TODO: move "return data" to the end; up here only needs to be "body"
+    body = Book.joins(:publishers).where("publishers.name LIKE ?", "%#{str}%").map do |book|
+      "#{book.title}, by #{book.authors[0].name}."
+    end
+
     return_data = {
       title: "Matching Books by Publisher",
       header: "This publisher has released:",
-      body: []
+      body: body
     }
 
-    ans = Book.all.select do |book|
-      book.publishers[0].name.downcase.include?(str.downcase)
-    end
-
-    ans.each do |book|
-      return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
-    end
     return_data
-  end
-
-  def find_books_by_page_count(book_pages)
-    # TODO: figure out why this is not returning the same kind of hash as find_books_by_title/author/publisher
-    self.books.select { |b|
-      b.page_count == book_pages
-    }.uniq
   end
 
   def find_books_by_mature(rating)
-    # TODO: move "return data" to the end; up here only needs to be "body"
-    return_data = {
-      title: "Book Search by Maturity Rating",
-      header: "",
-      body: []
-    }
 
-    matches = self.books.select { |b|
-      (rating.downcase == "mature" && !b.maturity.downcase.include?("not")) ||
-      b.maturity.downcase.include?(rating.downcase)
-    }.sample(10) { |e|
-      t_str = e.title
-      a_str = e.authors.map { |a|
-        a.name
-      }
-
-      # TODO: figure out what this is doing.  Looks similar to find_books_by_title?
-      a_str.flatten.uniq.join(" & ")
-      if a_str.class == Array
-        a_str = a_str.first
-      end
-
-      return_data[:body] << "#{t_str} by #{a_str}"
-    }
+    if rating.downcase == "mature"
+      matches = Book.where(maturity: "MATURE").sample(10)
+    else
+      matches = Book.where(maturity: "NOT_MATURE").sample(10)
+    end
 
     if matches.empty?
-      return_data[:header] = "Sorry, no books were found to match that maturity rating."
+      header = "Sorry, no books were found to match that maturity rating."
+      body = []
     else
-      return_data[:header] = "The following books matched your search:"
-      matches.each do |m|
-        return_data[:body] << "#{m.title}, by #{m.authors.first.name}"
+      header = "The following books matched your search:"
+      body = matches.map do |book|
+        title = book.title
+
+        authors = book.authors.map {|author| author.name}.flatten.uniq.join(" & ")
+
+        "#{title} by #{authors}"
       end
     end
+
+    return_data = {
+      title: "Book Search by Maturity Rating",
+      header: header,
+      body: body
+    }
+
     return_data
   end
 
-  # TODO: rename this so it's clear what it's doing
-  def length_abst(array)
+  def options_display(array)
     puts "Here are some options:"
     array = array.sample(10)
     array.each_with_index do |book, index|
@@ -442,36 +394,28 @@ class UserInterface
   end
 
   def books_by_page_count
-    # TODO: make multi-line string
-    puts "\n"
-    puts "What size of book are you looking for?"
-    puts "\n"
-    # TODO: update this to use ActiveRecord instead of ruby
-    long_books = []
-    mid_range = []
-    short_books = []
-    Book.all.each do |book|
-      if book.page_count < 50
-        short_books << book
-      elsif book.page_count > 50 && book.page_count < 200
-        mid_range << book
-      elsif book.page_count >= 200
-        long_books << book
-      end
-    end
-    # TODO: make multi-line string
-      puts "1: Just a bus read. (Under 50 pages)"
-      puts "2: Give me a weekender. (Between 50 and 200 pages)"
-      puts "3: Vacation length! (Over 200 pages)"
-      puts "\n"
+    puts <<~PAGE_COUNT_MENU
+
+    What size of book are you looking for?
+    1: Just a bus read. (Under 50 pages)
+    2: Give me a weekender. (Between 50 and 200 pages)
+    3: Vacation length! (Over 200 pages)
+
+    PAGE_COUNT_MENU
+
     input = gets.chomp
     puts "\n"
+
+    long_books = Book.where("page_count > 200")
+    mid_range = Book.where("page_count BETWEEN 50 AND 200")
+    short_books = Book.where("page_count < 50")
+
     if input.to_i == 1
-      length_abst(short_books)
+      options_display(short_books)
     elsif input.to_i == 2
-      length_abst(mid_range)
+      options_display(mid_range)
     elsif input.to_i == 3
-      length_abst(long_books)
+      options_display(long_books)
     else
       puts "That wasn't an option..."
     end
@@ -482,55 +426,48 @@ class UserInterface
   end
 
   def find_books_by_genre(str)
-    return_data = {
-      title: "Book Search by Genre",
-      header: "",
-      body: []
-    }
 
-    ans = Book.all.select do |book|
-      book.genres.downcase.include?(str.downcase) ||
-      book.title.downcase.include?(str.downcase)
-    end
+    ans = Book.where("genres LIKE :query OR title LIKE :query", query: "%#{str}%")
 
     if ans.empty?
       pick = ["biography", "cat", "dog", "sports", "humor"]
-      return_data[:header] = "Sorry, nothing for that. Perhaps try:"
-      return_data[:body] << "#{pick.sample}?"
+      header = "Sorry, nothing for that. Perhaps try:"
+      body =  ["#{pick.sample}?"]
     else
-      return_data[:header] = "Here are the books in your genre selection: "
-      ans.each do |book|
-        return_data[:body] << "#{book.title}, by #{book.authors[0].name}."
+      header = "Here are the books in your genre selection: "
+      body = ans.map do |book|
+        "#{book.title}, by #{book.authors[0].name}."
       end
     end
+
+    return_data = {
+      title: "Book Search by Genre",
+      header: header,
+      body: body
+    }
+
     return_data
   end
 
   def find_books_by_price(str)
+
+    matches = Book.where("title LIKE :query AND price > 0.0", query: "%#{str}%")
+
+    if matches.length > 0
+      match = matches.sample
+      arr2 = ["Worth it.", "Why not?", "Let's do this!", "It WOULD look good on your bookshelf...", "Can't put a price on a good read, though."]
+
+      header = "#{match.title} is $#{match.price}. #{arr2.sample}"
+    else
+      header = ["\x1b[38;5;196mThe book you are looking for isn't for sale right now.", "We do NOT recommend finding a link to illegaly download it instead."].join("\n\n")
+    end
+
     return_data = {
       title: "Pricing Data for a Given Book",
-      header: "",
+      header: header,
       body: []
     }
 
-    arr = []
-    Book.all.each do |book|
-      if book.title.downcase.include?(str.downcase)
-          arr << book.price
-      end
-    end
-
-    # TODO: this interaction is confusing.  It just randomly picks a book based
-    # on a keyword, then doesn't even tell you what the book title was
-
-    # TODO: look into the data fidelity for prices...many seem to be 0
-    if arr.length > 0
-      arr2 = ["Worth it.", "Why not?", "Let's do this!", "It WOULD look good on your bookshelf...", "Can't put a price on a good read, though."]
-
-      return_data[:header] = "That book is $#{arr[0]}. #{arr2.sample}"
-    else
-      return_data[:header] = ["\x1b[38;5;196mThe book you are looking for isn't for sale right now.", "We do NOT recommend finding a link to illegaly download it instead."].join("\n\n")
-    end
     return_data
   end
 
@@ -546,14 +483,8 @@ class UserInterface
 
     puts "\x1b[48;5;24m\x1b[38;5;255m*   Thrifty Reading   *\e[0m\n\n"
 
-    cheapest = nil
-    Book.all.each do |book|
-      if cheapest == nil
-          cheapest = book
-      elsif book.price > 0 && book.price < cheapest.price
-          cheapest = book
-      end
-    end
+    cheapest = Book.where("price > 0.0").min_by(&:price)
+
     puts "The cheapest book is #{cheapest.title} by #{cheapest.authors[0].name}, at $#{cheapest.price}. That's basically free!"
     puts "\n"
 
@@ -565,25 +496,25 @@ class UserInterface
   end
 
   def bibs_n_beans
-    # TODO: fix alignment in this method
+
     puts "\x1b[48;5;24m\x1b[38;5;255m*   Bibs' & Beans' Recommendations   *\e[0m\n\n"
-      if @@counter == 0
-          puts "\x1b[38;5;46m...\n\n"
-          sleep(1.second)
-          puts "Animals can't read.\n\n"
-          sleep(1.second)
-          @@counter += 1
-      elsif
-          @@counter == 1
-          puts "\x1b[38;5;46mAlright, fine. Bibs likes #{random_cat_book}!\n\n"
-          sleep(1.second)
-          @@counter += 1
-      elsif
-          @@counter == 2
-          puts "\x1b[38;5;46mBeans says you should read #{random_dog_book}!\n\n"
-          sleep(1.second)
-          @@counter = 0
-      end
+    if @@counter == 0
+        puts "\x1b[38;5;46m...\n\n"
+        sleep(1.second)
+        puts "Animals can't read.\n\n"
+        sleep(1.second)
+        @@counter += 1
+    elsif
+        @@counter == 1
+        puts "\x1b[38;5;46mAlright, fine. Bibs likes #{random_cat_book}!\n\n"
+        sleep(1.second)
+        @@counter += 1
+    elsif
+        @@counter == 2
+        puts "\x1b[38;5;46mBeans says you should read #{random_dog_book}!\n\n"
+        sleep(1.second)
+        @@counter = 0
+    end
 
     puts "\e[0m(Press ENTER to return to the menu)"
     any_key = gets.chomp
@@ -593,27 +524,13 @@ class UserInterface
   end
 
   def random_cat_book
-      # TODO: refactor to use ActiveRecord
-      arr =[]
-      Book.all.each do |book|
-          if book.genres.downcase.include?("cat") || book.title.downcase.include?("cat")
-              arr << book
-          end
-      end
-      boo = arr.sample
+      boo = Book.where("genres LIKE :query OR title LIKE :query", query: "%cat%").sample
       "#{boo.title}, by #{boo.authors[0].name}"
   end
 
   def random_dog_book
-    # TODO: refactor to use ActiveRecord
-      arr =[]
-      Book.all.each do |book|
-          if book.genres.downcase.include?("dog") || book.title.downcase.include?("dog")
-              arr << book
-          end
-      end
-      boo = arr.sample
-      "#{boo.title}, by #{boo.authors[0].name}"
+    boo = Book.where("genres LIKE :query OR title LIKE :query", query: "%dog%").sample
+    "#{boo.title}, by #{boo.authors[0].name}"
   end
 
   def exit_program
