@@ -19,6 +19,49 @@ class CommandLineInterface
     WELCOME
   end
 
+  def ask_question(number:, question:, a:, b:, c:, correct_answer:, correct_message:)
+    puts <<~QUESTION_TEXT
+    #{number}. #{question}
+
+      a. #{a}
+
+      b. #{b}
+
+      c. #{c}
+
+    QUESTION_TEXT
+
+    answer = self.user_answer
+    puts `clear`
+    system("clear")
+
+    right_answer = answer.downcase == correct_answer
+
+    if right_answer
+      @@stars += 1
+      puts <<~CORRECT
+
+        #{correct_message}
+
+
+        You have gained #{@@stars} Star(s).
+
+        *****************************************************
+        *****************************************************
+
+      CORRECT
+    else
+      puts <<~INCORRECT
+
+        Incorrect, please try again
+        *****************************************************
+        *****************************************************
+
+      INCORRECT
+    end
+    right_answer
+  end
+
   # Method to get back the user's answer in each question
   def user_answer
     puts
@@ -54,46 +97,20 @@ class CommandLineInterface
       end
     end
 
-    puts <<~MOST_BOOKS
+    success = ask_question({
+      number: 1,
+      question: "Which author has written the most books?",
+      a: most_authors,
+      b: @@wrong_answer_array.sample,
+      c: @@wrong_answer_array.sample,
+      correct_answer: "a",
+      correct_message: "Correct!! #{most_authors} has written #{book_count} books"
+    })
 
-      1. Which author has written the most books?
-
-      a. #{most_authors}
-
-      b. #{@@wrong_answer_array.sample}
-
-      c. #{@@wrong_answer_array.sample}
-
-    MOST_BOOKS
-
-    answer = self.user_answer
-    if answer == "a" || answer == "A"
-      puts `clear`
-      system("clear")
-      @@stars += 1
-      puts <<~MOST_BOOKS_CORRECT
-
-        Correct!! #{most_authors} has written #{book_count} books
-
-
-        You have gained #{@@stars} Star(s).
-
-        *****************************************************
-        *****************************************************
-
-      MOST_BOOKS_CORRECT
-    else
-      puts `clear`
-      system("clear")
-      puts <<~MOST_BOOKS_INCORRECT
-
-        Incorrect, please try again
-        *****************************************************
-        *****************************************************
-
-      MOST_BOOKS_INCORRECT
+    if !success
       self.author_most_book
     end
+
   end #end of method
 
   #Question 2
@@ -112,42 +129,18 @@ class CommandLineInterface
     author = Creator.find_by name: author_name
     book_by_author = author.books.map {|book| "#{book.name}"}
     # Question and answers (c is correct)
-    puts <<~BY_AUTHOR
 
-      2. Which book did #{author.name} write?
+    success = ask_question({
+      number: 2,
+      question: "Which book did #{author.name} write?",
+      a: book_array.sample,
+      b: book_array.sample,
+      c: book_by_author[0],
+      correct_answer: "c",
+      correct_message: "Great job! #{author.name} did write #{book_by_author[0]}!"
+    })
 
-        a. #{book_array.sample}
-
-        b. #{book_array.sample}
-
-        c. #{book_by_author[0]}
-
-    BY_AUTHOR
-    # Ask user for their answer
-    user_guess = self.user_answer
-    # Check user's answer
-    if user_guess == "c" || user_guess == "C"
-      system("clear")
-      @@stars += 1
-      puts <<~BY_AUTHOR_CORRECT
-        Great job! #{author.name} did write #{book_by_author[0]}!
-
-
-        You have gained #{@@stars} Stars.
-
-        *****************************************************
-        *****************************************************
-
-      BY_AUTHOR_CORRECT
-    else
-      system("clear")
-      puts <<~BY_AUTHOR_INCORRECT
-
-        Incorrect. Try again.
-        *****************************************************
-        *****************************************************
-
-      BY_AUTHOR_INCORRECT
+    if !success
       self.books_by_author
     end
   end
@@ -167,40 +160,17 @@ class CommandLineInterface
         wrong_publisher_array << publisher.name
       end
     end
-    puts <<~MOST_PUBLISHER
-    3. Which publisher has most authors?
+    success = ask_question({
+      number: 3,
+      question: "Which publisher has most authors?",
+      a: wrong_publisher_array.sample,
+      b: wrong_publisher_array.sample,
+      c: publisher_name,
+      correct_answer: "c",
+      correct_message: "Correct!!, #{publisher_name} has #{author_count} authors."
+    })
 
-       a. #{wrong_publisher_array.sample}
-
-       b. #{wrong_publisher_array.sample}
-
-       c. #{publisher_name}
-
-    MOST_PUBLISHER
-    user_choice = self.user_answer
-    if user_choice == "c" || user_choice == "C"
-      system("clear")
-      @@stars += 1
-      puts <<~MOST_PUBLISHER_CORRECT
-
-        Correct!!, #{publisher_name} has #{author_count} authors.
-
-
-        You have gained #{@@stars} Stars.
-
-        **********************************************************
-        **********************************************************
-
-      MOST_PUBLISHER_CORRECT
-    else
-      system("clear")
-      puts <<~MOST_PUBLISHER_INCORRECT
-
-      Incorrect, Please try again"
-      **********************************************************"
-      **********************************************************"
-      puts
-      MOST_PUBLISHER_INCORRECT
+    if !success
       self.books_by_publisher
     end
   end
@@ -218,44 +188,18 @@ class CommandLineInterface
     # author_of_book = book.creators.map {|book| "#{book.name}"}
     author_rand_name = self.author_names(author).sample
     author_rand_name2 = self.author_names(author).sample
-    # Question and answers (c is correct)
-    puts <<~BY_BOOK
-      4. Who wrote #{book_name}?
 
-        a. #{author_rand_name.name}
+    success = ask_question({
+      number: 4,
+      question: "Who wrote #{book_name}?",
+      a: author_rand_name.name,
+      b: author.name,
+      c: author_rand_name2.name,
+      correct_answer: "b",
+      correct_message: "Great job! #{book_name} was written by #{author.name}!"
+    })
 
-        b. #{author.name}
-
-        c. #{author_rand_name2.name}
-    BY_BOOK
-    # Ask user for their answer
-    user_guess = self.user_answer
-
-    # Check user's answer
-    if user_guess == "b" || user_guess == "B"
-      system("clear")
-      @@stars += 1
-      puts <<~BY_BOOK_CORRECT
-
-        Great job! #{book_name} was written by #{author.name}!
-
-
-        You have gained #{@@stars} Stars.
-        Your session is completed
-
-        *****************************************************
-        *****************************************************
-
-      BY_BOOK_CORRECT
-    else
-      system("clear")
-      puts <<~BY_BOOK_INCORRECT
-
-        Incorrect. Try again.
-        *****************************************************
-        *****************************************************
-
-      BY_BOOK_INCORRECT
+    if !success
       self.author_of_book
     end
   end
@@ -276,40 +220,19 @@ class CommandLineInterface
     end
     digital_percent = digital_count / total_count.to_f * 100 #36.9% digital
     physical_percent = physical_count / total_count.to_f * 100 #63.1% physical
-    puts <<~PHYSICAL_DIGITAL
-      5. Of total checkouts, choose the percent usage for Physical and Digital formats.
 
-         a.Physical #{physical_percent - 20}%, #{digital_percent +20}%.
+    success = ask_question({
+      number: 5,
+      question: "Of total checkouts, choose the percent usage for Physical and Digital formats.",
+      a: "Physical #{physical_percent - 20}%, #{digital_percent +20}%",
+      b: "Physical #{physical_percent}%, Digital #{digital_percent}%",
+      c: "Physical #{digital_percent}, Digital #{physical_percent}%",
+      correct_answer: "b",
+      correct_message: "Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages."
+      })
 
-         b.Physical #{physical_percent}%, Digital #{digital_percent}%.
-
-         c.Physical #{digital_percent}, Digital #{physical_percent}%.
-    PHYSICAL_DIGITAL
-    user_choice = self.user_answer
-    if user_choice == "b" || user_choice == "B"
-      system("clear")
-      @@stars += 1
-
-      puts <<~PHYSICAL_DIGITAL_CORRECT
-
-        Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages.
-
-
-        You have gained #{@@stars} Stars.
-
-        THANK YOU FOR PLAYING
-
-      PHYSICAL_DIGITAL_CORRECT
-    else
-      system("clear")
-      puts <<~PHYSICAL_DIGITAL_INCORRECT
-
-        Incorrect, Please try again
-        *****************************************************
-        *****************************************************
-
-      PHYSICAL_DIGITAL_INCORRECT
+    if !success
       self.usage_class_percentage
-      end
     end
-  end #end of class
+  end
+end #end of class
