@@ -70,19 +70,6 @@ class CommandLineInterface
     gets.chomp
   end
 
-  #this method returns all book names in an array
-  def book_names
-    Book.all.map do |book|
-      book.name
-    end
-  end
-#this method returns all author names in an array
-  def author_names(exclude_name)
-    Creator.all.select do |author|
-      author.name != exclude_name
-    end
-  end
-
   # Question 1: Which author has written the most books?
   def author_most_book
 
@@ -187,7 +174,7 @@ class CommandLineInterface
     success = ask_question({
       number: 5,
       question: "Of total checkouts, choose the percent usage for Physical and Digital formats.",
-      a: "Physical #{physical_percent - 20}%, #{digital_percent +20}%",
+      a: "Physical #{physical_percent - 20}%, Digital #{digital_percent +20}%",
       b: "Physical #{physical_percent}%, Digital #{digital_percent}%",
       c: "Physical #{digital_percent}, Digital #{physical_percent}%",
       correct_answer: "b",
