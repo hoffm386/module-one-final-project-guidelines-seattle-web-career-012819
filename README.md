@@ -18,8 +18,13 @@ Follow the below steps to play the game:
 1. Make sure that you have Ruby installed on your computer. It can be downloaded here: https://www.ruby-lang.org/en/downloads/
 2. Open Terminal
 3. Navigate to the Project folder
-4. Type into the Terminal: ruby bin/run.rb
-5. Click 'Enter'
+4. Type into the Terminal:
+```
+bundle install
+rake db:migrate
+rake db:seed
+ruby bin/run.rb
+```
 
 # A Contributors Guide
 If you are interested in making a contribution to this project, let us start by saying, THANK YOU. As learners, interested in improving our code, we appreciate your feedback.

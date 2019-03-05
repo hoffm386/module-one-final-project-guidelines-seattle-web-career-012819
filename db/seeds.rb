@@ -24,10 +24,13 @@ book_array = api_names.add_book_title
 book_array.each do |book|
   creator = Creator.find_by ({"name" => book["creator_name"]})
   publisher = Publisher.find_by ({"name" => book["publisher_name"]})
-  Book.create(
-    name: book["title"],
-    usage_class: book["usage_class"],
-    creator: creator,
-    publisher: publisher
-  )
+  # only create book object if creator and publisher are in the database
+  if creator && publisher
+    Book.create(
+      name: book["title"],
+      usage_class: book["usage_class"],
+      creator: creator,
+      publisher: publisher
+    )
+  end
 end
