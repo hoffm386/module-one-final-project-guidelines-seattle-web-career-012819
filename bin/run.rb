@@ -3,7 +3,7 @@ require_relative "../lib/API/api_communicator.rb"
 require_relative "../lib/API/command_line_interface.rb"
 
 #call methods here
-CLI = Command_line_interface.new
+CLI = CommandLineInterface.new
 
 
 #CLI.question_01

@@ -1,19 +1,22 @@
-class Command_line_interface
+class CommandLineInterface
   @@stars = 0
   # Introduction to the Guessing Game
   def welcome
-      puts "           LIBRARY TRIVIA GAME"
-      puts
-      puts "     ************       ************"
-      puts "     *  _______     *     _______  *"
-      puts "     *  _______     *     _______  *"
-      puts "     *  _______     *     _______  *"
-      puts "     *  _______     *     _______  *"
-      puts "     *  _______     *     _______  *"
-      puts "     *              *              *"
-      puts "     ************       ************"
-      puts "                   ***"
-      puts
+    puts <<-WELCOME
+
+               LIBRARY TRIVIA GAME
+
+         ************       ************
+         *  _______     *     _______  *
+         *  _______     *     _______  *
+         *  _______     *     _______  *
+         *  _______     *     _______  *
+         *  _______     *     _______  *
+         *              *              *
+         ************       ************
+                       ***
+
+    WELCOME
   end
 
   # Method to get back the user's answer in each question
@@ -50,36 +53,45 @@ class Command_line_interface
         @@wrong_answer_array << creator.name
       end
     end
-    puts
-    puts "1. Which author has written the most books?"
-    puts
-    puts "a. #{most_authors}"
-    puts
-    puts "b. #{@@wrong_answer_array.sample}"
-    puts
-    puts "c. #{@@wrong_answer_array.sample}"
-    puts
+
+    puts <<~MOST_BOOKS
+
+      1. Which author has written the most books?
+
+      a. #{most_authors}
+
+      b. #{@@wrong_answer_array.sample}
+
+      c. #{@@wrong_answer_array.sample}
+
+    MOST_BOOKS
+
     answer = self.user_answer
     if answer == "a" || answer == "A"
       puts `clear`
       system("clear")
-      puts
-      puts "Correct!! #{most_authors} has written #{book_count} books"
       @@stars += 1
-      puts
-      puts "You have gained #{@@stars} Star(s)."
-      puts
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~MOST_BOOKS_CORRECT
+
+        Correct!! #{most_authors} has written #{book_count} books
+
+
+        You have gained #{@@stars} Star(s).
+
+        *****************************************************
+        *****************************************************
+
+      MOST_BOOKS_CORRECT
     else
       puts `clear`
       system("clear")
-      puts
-      puts "Incorrect, please try again"
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~MOST_BOOKS_INCORRECT
+
+        Incorrect, please try again
+        *****************************************************
+        *****************************************************
+
+      MOST_BOOKS_INCORRECT
       self.author_most_book
     end
   end #end of method
@@ -100,34 +112,42 @@ class Command_line_interface
     author = Creator.find_by name: author_name
     book_by_author = author.books.map {|book| "#{book.name}"}
     # Question and answers (c is correct)
-    puts "2. Which book did #{author.name} write?"
-    puts
-    puts "  a. #{book_array.sample}"
-    puts
-    puts "  b. #{book_array.sample}"
-    puts
-    puts "  c. #{book_by_author[0]}"
+    puts <<~BY_AUTHOR
+
+      2. Which book did #{author.name} write?
+
+        a. #{book_array.sample}
+
+        b. #{book_array.sample}
+
+        c. #{book_by_author[0]}
+
+    BY_AUTHOR
     # Ask user for their answer
     user_guess = self.user_answer
     # Check user's answer
     if user_guess == "c" || user_guess == "C"
       system("clear")
-      puts "Great job! #{author.name} did write #{book_by_author[0]}!"
-      puts
       @@stars += 1
-      puts
-      puts "You have gained #{@@stars} Stars."
-      puts
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~BY_AUTHOR_CORRECT
+        Great job! #{author.name} did write #{book_by_author[0]}!
+
+
+        You have gained #{@@stars} Stars.
+
+        *****************************************************
+        *****************************************************
+
+      BY_AUTHOR_CORRECT
     else
       system("clear")
-      puts
-      puts "Incorrect. Try again."
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~BY_AUTHOR_INCORRECT
+
+        Incorrect. Try again.
+        *****************************************************
+        *****************************************************
+
+      BY_AUTHOR_INCORRECT
       self.books_by_author
     end
   end
@@ -147,33 +167,40 @@ class Command_line_interface
         wrong_publisher_array << publisher.name
       end
     end
-    puts "3. Which publisher has most authors?"
-    puts
-    puts "   a. #{wrong_publisher_array.sample}"
-    puts
-    puts "   b. #{wrong_publisher_array.sample}"
-    puts
-    puts "   c. #{publisher_name}"
+    puts <<~MOST_PUBLISHER
+    3. Which publisher has most authors?
+
+       a. #{wrong_publisher_array.sample}
+
+       b. #{wrong_publisher_array.sample}
+
+       c. #{publisher_name}
+
+    MOST_PUBLISHER
     user_choice = self.user_answer
     if user_choice == "c" || user_choice == "C"
       system("clear")
-      puts
-      puts "Correct!!, #{publisher_name} has #{author_count} authors."
-      puts
       @@stars += 1
-      puts
-      puts "You have gained #{@@stars} Stars."
-      puts
-      puts "**********************************************************"
-      puts "**********************************************************"
-      puts
+      puts <<~MOST_PUBLISHER_CORRECT
+
+        Correct!!, #{publisher_name} has #{author_count} authors.
+
+
+        You have gained #{@@stars} Stars.
+
+        **********************************************************
+        **********************************************************
+
+      MOST_PUBLISHER_CORRECT
     else
       system("clear")
+      puts <<~MOST_PUBLISHER_INCORRECT
+
+      Incorrect, Please try again"
+      **********************************************************"
+      **********************************************************"
       puts
-      puts "Incorrect, Please try again"
-      puts "**********************************************************"
-      puts "**********************************************************"
-      puts
+      MOST_PUBLISHER_INCORRECT
       self.books_by_publisher
     end
   end
@@ -192,38 +219,43 @@ class Command_line_interface
     author_rand_name = self.author_names(author).sample
     author_rand_name2 = self.author_names(author).sample
     # Question and answers (c is correct)
-    puts "4. Who wrote #{book_name}?"
-    puts
-    puts "  a. #{author_rand_name.name}"
-    puts
-    puts "  b. #{author.name}"
-    puts
-    puts "  c. #{author_rand_name2.name}"
+    puts <<~BY_BOOK
+      4. Who wrote #{book_name}?
 
+        a. #{author_rand_name.name}
+
+        b. #{author.name}
+
+        c. #{author_rand_name2.name}
+    BY_BOOK
     # Ask user for their answer
     user_guess = self.user_answer
 
     # Check user's answer
     if user_guess == "b" || user_guess == "B"
       system("clear")
-      puts
-      puts "Great job! #{book_name} was written by #{author.name}!"
-      puts
       @@stars += 1
-      puts
-      puts "You have gained #{@@stars} Stars."
-      puts "Your session is completed"
-      puts
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~BY_BOOK_CORRECT
+
+        Great job! #{book_name} was written by #{author.name}!
+
+
+        You have gained #{@@stars} Stars.
+        Your session is completed
+
+        *****************************************************
+        *****************************************************
+
+      BY_BOOK_CORRECT
     else
       system("clear")
-      puts
-      puts "Incorrect. Try again."
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~BY_BOOK_INCORRECT
+
+        Incorrect. Try again.
+        *****************************************************
+        *****************************************************
+
+      BY_BOOK_INCORRECT
       self.author_of_book
     end
   end
@@ -244,33 +276,39 @@ class Command_line_interface
     end
     digital_percent = digital_count / total_count.to_f * 100 #36.9% digital
     physical_percent = physical_count / total_count.to_f * 100 #63.1% physical
-    puts "5. Of total checkouts, choose the percent usage for Physical and Digital formats."
-    puts
-    puts "   a.Physical #{physical_percent - 20}%, #{digital_percent +20}%."
-    puts
-    puts "   b.Physical #{physical_percent}%, Digital #{digital_percent}%."
-    puts
-    puts "   c.Physical #{digital_percent}, Digital #{physical_percent}%."
+    puts <<~PHYSICAL_DIGITAL
+      5. Of total checkouts, choose the percent usage for Physical and Digital formats.
+
+         a.Physical #{physical_percent - 20}%, #{digital_percent +20}%.
+
+         b.Physical #{physical_percent}%, Digital #{digital_percent}%.
+
+         c.Physical #{digital_percent}, Digital #{physical_percent}%.
+    PHYSICAL_DIGITAL
     user_choice = self.user_answer
     if user_choice == "b" || user_choice == "B"
       system("clear")
-      puts
-      puts "Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages."
-      puts
       @@stars += 1
-      puts
-      puts "You have gained #{@@stars} Stars."
-      puts
-      puts "THANK YOU FOR PLAYING"
-      puts
-      puts
+
+      puts <<~PHYSICAL_DIGITAL_CORRECT
+
+        Correct!!, Physical has #{physical_percent}% and Digital has #{digital_percent}% usages.
+
+
+        You have gained #{@@stars} Stars.
+
+        THANK YOU FOR PLAYING
+
+      PHYSICAL_DIGITAL_CORRECT
     else
       system("clear")
-      puts
-      puts "Incorrect, Please try again"
-      puts "*****************************************************"
-      puts "*****************************************************"
-      puts
+      puts <<~PHYSICAL_DIGITAL_INCORRECT
+
+        Incorrect, Please try again
+        *****************************************************
+        *****************************************************
+
+      PHYSICAL_DIGITAL_INCORRECT
       self.usage_class_percentage
       end
     end
