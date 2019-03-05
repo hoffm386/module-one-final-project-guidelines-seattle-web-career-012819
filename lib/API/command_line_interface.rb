@@ -82,29 +82,21 @@ class CommandLineInterface
       author.name != exclude_name
     end
   end
+
   # Question 1: Which author has written the most books?
   def author_most_book
-    welcome
-    most_authors = nil
-    book_count =0
-    @@wrong_answer_array = [] #this array contains all wrong answers
-    Creator.all.each do |creator|
-      if creator.books.count > book_count
-        book_count = creator.books.count
-        most_authors = creator.name
-      else
-        @@wrong_answer_array << creator.name
-      end
-    end
+
+    most_prolific_author = Creator.order(books_count: :desc).first
+    others = Creator.where.not(id: most_prolific_author.id).sample(2)
 
     success = ask_question({
       number: 1,
       question: "Which author has written the most books?",
-      a: most_authors,
-      b: @@wrong_answer_array.sample,
-      c: @@wrong_answer_array.sample,
+      a: most_prolific_author.name,
+      b: others.first.name,
+      c: others.second.name,
       correct_answer: "a",
-      correct_message: "Correct!! #{most_authors} has written #{book_count} books"
+      correct_message: "Correct!! #{most_prolific_author.name} has written #{most_prolific_author.books_count} books"
     })
 
     if !success
@@ -115,29 +107,19 @@ class CommandLineInterface
 
   #Question 2
   def books_by_author
-    author_name_array =[]
-    random_index = rand(0..100)
-    book_array = self.book_names
-    # Set the author's name that the question will search for random names
-    Creator.all.each do |author|
-      if author.name != "Unknown Authors"
-        author_name_array << author.name
-      end
-    end
-    author_name = "#{author_name_array[random_index]}"
-    # Find the book written by author_name
-    author = Creator.find_by name: author_name
-    book_by_author = author.books.map {|book| "#{book.name}"}
-    # Question and answers (c is correct)
+
+    random_author = Creator.where("books_count > 0").sample
+    random_book = random_author.books.sample
+    others = Book.where.not(creator: random_author).sample(2)
 
     success = ask_question({
       number: 2,
-      question: "Which book did #{author.name} write?",
-      a: book_array.sample,
-      b: book_array.sample,
-      c: book_by_author[0],
+      question: "Which book did #{random_author.name} write?",
+      a: others.first.name,
+      b: others.second.name,
+      c: random_book.name,
       correct_answer: "c",
-      correct_message: "Great job! #{author.name} did write #{book_by_author[0]}!"
+      correct_message: "Great job! #{random_author.name} did write #{random_book.name}!"
     })
 
     if !success
@@ -149,25 +131,18 @@ class CommandLineInterface
   # User provides a publisher name, Method #3
   # Then a list of all of their book titles and authors (creator) is returned
   def books_by_publisher
-    author_count =0
-    publisher_name = nil
-    wrong_publisher_array = []
-    Publisher.all.each do |publisher|
-      if publisher.creators.count > author_count
-        author_count = publisher.creators.count
-        publisher_name = publisher.name
-      else
-        wrong_publisher_array << publisher.name
-      end
-    end
+
+    publisher_most_authors = Publisher.order(creators_count: :desc).first
+    others = Publisher.where.not(id: publisher_most_authors.id).sample(2)
+
     success = ask_question({
       number: 3,
       question: "Which publisher has most authors?",
-      a: wrong_publisher_array.sample,
-      b: wrong_publisher_array.sample,
-      c: publisher_name,
+      a: others.first.name,
+      b: others.second.name,
+      c: publisher_most_authors.name,
       correct_answer: "c",
-      correct_message: "Correct!!, #{publisher_name} has #{author_count} authors."
+      correct_message: "Correct!!, #{publisher_most_authors.name} has #{publisher_most_authors.creators_count} authors."
     })
 
     if !success
@@ -178,25 +153,19 @@ class CommandLineInterface
 
   # Question 4
   def author_of_book
-    # Set the book that the question will search for the author of
-    index_random = rand(1..6)
-    book_name = self.book_names[index_random]
 
-    # Find the author that created the book
-    book = Book.find_by name: book_name
-    author = book.creator
-    # author_of_book = book.creators.map {|book| "#{book.name}"}
-    author_rand_name = self.author_names(author).sample
-    author_rand_name2 = self.author_names(author).sample
+    random_book = Book.all.sample
+    random_author = random_book.creator
+    others = Creator.where.not(id: random_author.id).sample(2)
 
     success = ask_question({
       number: 4,
-      question: "Who wrote #{book_name}?",
-      a: author_rand_name.name,
-      b: author.name,
-      c: author_rand_name2.name,
+      question: "Who wrote #{random_book.name}?",
+      a: others.first.name,
+      b: random_author.name,
+      c: others.second.name,
       correct_answer: "b",
-      correct_message: "Great job! #{book_name} was written by #{author.name}!"
+      correct_message: "Great job! #{random_book.name} was written by #{random_author.name}!"
     })
 
     if !success
@@ -207,17 +176,11 @@ class CommandLineInterface
 
 #Question #5 method
   def usage_class_percentage
-    physical_count = 0
-    digital_count = 0
-    total_count =0
-    Book.all.each do |book|
-      total_count += 1
-      if book.usage_class == "Physical"
-        physical_count += 1
-      else
-        digital_count += 1
-      end
-    end
+
+    physical_count = Book.where(usage_class: "Physical").count
+    digital_count = Book.where.not(usage_class: "Physical").count
+    total_count = physical_count + digital_count
+
     digital_percent = digital_count / total_count.to_f * 100 #36.9% digital
     physical_percent = physical_count / total_count.to_f * 100 #63.1% physical
 
